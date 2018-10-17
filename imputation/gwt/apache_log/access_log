@@ -1,0 +1,160 @@
+127.0.0.1 - - [24/May/2018:22:14:23 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=2 HTTP/1.1" 200 1512
+127.0.0.1 - - [24/May/2018:22:14:50 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=2 HTTP/1.1" 200 1512
+127.0.0.1 - - [24/May/2018:22:16:06 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=2 HTTP/1.1" 200 1512
+127.0.0.1 - - [24/May/2018:22:18:46 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 1520
+127.0.0.1 - - [24/May/2018:22:18:52 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback1 HTTP/1.1" 200 2817229
+127.0.0.1 - - [24/May/2018:22:25:38 -0400] "GET /output/P63279[UBE2I]_fitness_org.png HTTP/1.1" 200 547366
+127.0.0.1 - - [24/May/2018:22:25:38 -0400] "GET /output/P63279[UBE2I]_fitness_refine.png HTTP/1.1" 200 549092
+127.0.0.1 - - [24/May/2018:22:26:27 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[Thu_May_10_09_31_49_GMT-400_2018_42];callback=callback2 HTTP/1.1" 200 9734556
+127.0.0.1 - - [24/May/2018:22:26:33 -0400] "GET /output/P35520[Thu_May_10_09_31_49_GMT-400_2018_42]_fitness_org.png HTTP/1.1" 200 1664346
+127.0.0.1 - - [24/May/2018:22:26:33 -0400] "GET /output/P35520[Thu_May_10_09_31_49_GMT-400_2018_42]_fitness_refine.png HTTP/1.1" 200 1962443
+127.0.0.1 - - [24/May/2018:22:26:46 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=Q9H3S4[TPK1];callback=callback3 HTTP/1.1" 200 4301446
+127.0.0.1 - - [24/May/2018:22:26:50 -0400] "GET /output/Q9H3S4[TPK1]_fitness_org.png HTTP/1.1" 200 646745
+127.0.0.1 - - [24/May/2018:22:26:50 -0400] "GET /output/Q9H3S4[TPK1]_fitness_refine.png HTTP/1.1" 200 729531
+127.0.0.1 - - [24/May/2018:22:31:20 -0400] "POST /wsgi/imputation_wsgi.wsgi? HTTP/1.1" 200 3
+127.0.0.1 - - [24/May/2018:22:31:21 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=1;sessionid=Thu_May_24_22_31_20_GMT-400_2018_5;proteinid=P63279;cutoff=10;normalization=0;regularization=1;auto_cutoff=0;callback=callback4 HTTP/1.1" 200 99
+127.0.0.1 - - [24/May/2018:22:31:41 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:36:52 -0400] "POST /wsgi/imputation_wsgi.wsgi? HTTP/1.1" 200 3
+127.0.0.1 - - [24/May/2018:22:36:52 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=1;sessionid=Thu_May_24_22_36_52_GMT-400_2018_32;proteinid=P63279;cutoff=10;normalization=0;regularization=1;auto_cutoff=0;callback=callback5 HTTP/1.1" 200 99
+127.0.0.1 - - [24/May/2018:22:37:12 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:38:08 -0400] "POST /wsgi/imputation_wsgi.wsgi? HTTP/1.1" 200 3
+127.0.0.1 - - [24/May/2018:22:38:08 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=1;sessionid=Thu_May_24_22_38_08_GMT-400_2018_10;proteinid=P63279;cutoff=10;normalization=0;regularization=1;auto_cutoff=0;callback=callback6 HTTP/1.1" 200 99
+127.0.0.1 - - [24/May/2018:22:38:28 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:38:39 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 158
+127.0.0.1 - - [24/May/2018:22:38:58 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:38:58 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:39:34 -0400] "POST /wsgi/imputation_wsgi.wsgi? HTTP/1.1" 200 3
+127.0.0.1 - - [24/May/2018:22:39:34 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=1;sessionid=Thu_May_24_22_39_34_GMT-400_2018_2;proteinid=P63279;cutoff=10;normalization=0;regularization=1;auto_cutoff=0;callback=callback1 HTTP/1.1" 200 99
+127.0.0.1 - - [24/May/2018:22:39:54 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:40:54 -0400] "POST /wsgi/imputation_wsgi.wsgi? HTTP/1.1" 200 3
+127.0.0.1 - - [24/May/2018:22:41:14 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:40:59 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=1;sessionid=Thu_May_24_22_40_54_GMT-400_2018_44;proteinid=P63279;cutoff=10;normalization=0;regularization=1;auto_cutoff=0;callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [24/May/2018:22:42:49 -0400] "GET /output/P63279[Thu_May_24_22_40_54_GMT-400_2018_44]_fitness_org.png HTTP/1.1" 200 842090
+127.0.0.1 - - [24/May/2018:22:42:49 -0400] "GET /output/P63279[Thu_May_24_22_40_54_GMT-400_2018_44]_fitness_refine.png HTTP/1.1" 200 833017
+127.0.0.1 - - [24/May/2018:22:47:10 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 158
+127.0.0.1 - - [24/May/2018:22:47:20 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(Low%20B6)];callback=callback1 HTTP/1.1" 200 9734500
+127.0.0.1 - - [24/May/2018:22:47:25 -0400] "GET /output/P35520[CBS(Low%20B6)]_fitness_org.png HTTP/1.1" 200 1605779
+127.0.0.1 - - [24/May/2018:22:47:25 -0400] "GET /output/P35520[CBS(Low%20B6)]_fitness_refine.png HTTP/1.1" 200 1881528
+127.0.0.1 - - [24/May/2018:22:47:33 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [24/May/2018:22:47:56 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:22:48:29 -0400] "GET /output/P63279[UBE2I]_fitness_org.png HTTP/1.1" 200 842090
+127.0.0.1 - - [24/May/2018:22:48:29 -0400] "GET /output/P63279[UBE2I]_fitness_refine.png HTTP/1.1" 200 833017
+127.0.0.1 - - [24/May/2018:22:50:47 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(Low%20B6)];callback=callback3 HTTP/1.1" 200 9734500
+127.0.0.1 - - [24/May/2018:22:51:07 -0400] "GET /output/P35520[CBS(Low%20B6)]_fitness_org.png HTTP/1.1" 200 1605779
+127.0.0.1 - - [24/May/2018:22:51:07 -0400] "GET /output/P35520[CBS(Low%20B6)]_fitness_refine.png HTTP/1.1" 200 1881528
+127.0.0.1 - - [24/May/2018:22:51:55 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=Q9H3S4[TPK1];callback=callback4 HTTP/1.1" 200 4301446
+127.0.0.1 - - [24/May/2018:22:52:32 -0400] "POST /wsgi/imputation_wsgi.wsgi? HTTP/1.1" 200 3
+127.0.0.1 - - [24/May/2018:22:52:32 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=1;sessionid=Thu_May_24_22_52_32_GMT-400_2018_10;proteinid=P35520;cutoff=10;normalization=0;regularization=1;auto_cutoff=0;callback=callback5 HTTP/1.1" 200 9734618
+127.0.0.1 - - [24/May/2018:22:59:46 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(Low%20B6)];callback=callback6 HTTP/1.1" 200 99
+127.0.0.1 - - [24/May/2018:22:59:50 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [24/May/2018:22:59:54 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [24/May/2018:23:00:01 -0400] "GET /output/P35520[CBS(LowB6)]_fitness_org.png HTTP/1.1" 200 1664346
+127.0.0.1 - - [24/May/2018:23:00:01 -0400] "GET /output/P35520[CBS(LowB6)]_fitness_refine.png HTTP/1.1" 200 1981143
+127.0.0.1 - - [24/May/2018:23:00:05 -0400] "GET /output/P35520[CBS(LowB6)]_imputation.csv HTTP/1.1" 200 4934220
+127.0.0.1 - - [24/May/2018:23:00:10 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [24/May/2018:23:01:46 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [24/May/2018:23:01:50 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [24/May/2018:23:02:03 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:23:02:03 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:23:08:25 -0400] "GET / HTTP/1.1" 200 358
+127.0.0.1 - - [24/May/2018:23:08:25 -0400] "GET /imputation/imputation.nocache.js HTTP/1.1" 200 2474
+127.0.0.1 - - [24/May/2018:23:08:25 -0400] "GET /hover.css HTTP/1.1" 200 119499
+127.0.0.1 - - [24/May/2018:23:08:25 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [24/May/2018:23:08:25 -0400] "GET /background.jpg HTTP/1.1" 200 257676
+127.0.0.1 - - [24/May/2018:23:08:37 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [24/May/2018:23:08:54 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [24/May/2018:23:09:13 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:23:09:13 -0400] "-" 408 -
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/imputation.nocache.js HTTP/1.1" 200 7783
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/gwt/clean/clean.css HTTP/1.1" 200 24581
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/390E670684CB70EDB7328E715B128C01.cache.js HTTP/1.1" 200 251259
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/gwt/clean/images/hborder.png HTTP/1.1" 200 1995
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/51F2545F00EC727E8E7FF5565065749D.cache.gif HTTP/1.1" 200 268113
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/A75817E75CE753B5DC4E31270BA77E99.cache.jpg HTTP/1.1" 200 50785
+127.0.0.1 - - [24/May/2018:23:09:27 -0400] "GET /imputation/581BCA15D76A1A46FA04C20E71DD1B6E.cache.png HTTP/1.1" 200 828196
+127.0.0.1 - - [24/May/2018:23:09:33 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [24/May/2018:23:09:48 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:10:11:22 -0400] "GET /imputation/imputation.nocache.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /imputation/390E670684CB70EDB7328E715B128C01.cache.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /imputation/gwt/clean/clean.css HTTP/1.1" 200 24581
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /background1080.jpg HTTP/1.1" 200 133764
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /imputation/gwt/clean/images/hborder.png HTTP/1.1" 200 1995
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /imputation/51F2545F00EC727E8E7FF5565065749D.cache.gif HTTP/1.1" 200 268113
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /imputation/A75817E75CE753B5DC4E31270BA77E99.cache.jpg HTTP/1.1" 200 50785
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /imputation/581BCA15D76A1A46FA04C20E71DD1B6E.cache.png HTTP/1.1" 200 828196
+127.0.0.1 - - [25/May/2018:10:11:23 -0400] "GET /favicon.ico HTTP/1.1" 404 209
+127.0.0.1 - - [25/May/2018:10:11:34 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:10:11:50 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:10:52:27 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:10:52:47 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:52:47 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:52:47 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:52:47 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:52:47 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:53:11 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:10:53:30 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:53:30 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:53:30 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:53:30 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:53:30 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:53:37 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:10:53:57 -0400] "GET /output/P35520[CBS(LowB6)]_fitness_org.png HTTP/1.1" 200 1664346
+127.0.0.1 - - [25/May/2018:10:54:20 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:10:54:39 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:54:39 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:54:39 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:54:39 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:10:54:39 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:14:13:33 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [25/May/2018:14:13:35 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback3 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET /imputation/imputation.nocache.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET /imputation/390E670684CB70EDB7328E715B128C01.cache.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET /imputation/51F2545F00EC727E8E7FF5565065749D.cache.gif HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET /imputation/581BCA15D76A1A46FA04C20E71DD1B6E.cache.png HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:14:13:41 -0400] "GET /imputation/A75817E75CE753B5DC4E31270BA77E99.cache.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:14:13:46 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:14:14:01 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:14:14:01 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:14:14:01 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:14:14:01 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:15:39:56 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [25/May/2018:15:41:12 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback3 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET /imputation/imputation.nocache.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET /imputation/390E670684CB70EDB7328E715B128C01.cache.js HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET /imputation/51F2545F00EC727E8E7FF5565065749D.cache.gif HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET /imputation/581BCA15D76A1A46FA04C20E71DD1B6E.cache.png HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:47:00 -0400] "GET /imputation/A75817E75CE753B5DC4E31270BA77E99.cache.jpg HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:47:13 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:15:49:55 -0400] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:49:55 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:15:50:01 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:15:50:15 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:15:50:15 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:15:50:15 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:15:50:15 -0400] "-" 408 -
+127.0.0.1 - - [25/May/2018:15:50:23 -0400] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [25/May/2018:15:50:23 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:15:50:36 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:15:50:48 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [25/May/2018:16:25:19 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [25/May/2018:16:25:24 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [25/May/2018:16:25:34 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238
+127.0.0.1 - - [29/May/2018:10:19:19 -0400] "GET /hover.css HTTP/1.1" 304 -
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /imputation/imputation.nocache.js HTTP/1.1" 304 -
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /imputation/390E670684CB70EDB7328E715B128C01.cache.js HTTP/1.1" 304 -
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /imputation/gwt/clean/clean.css HTTP/1.1" 200 24581
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /background1080.jpg HTTP/1.1" 200 133764
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /imputation/51F2545F00EC727E8E7FF5565065749D.cache.gif HTTP/1.1" 200 268113
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /favicon.ico HTTP/1.1" 404 209
+127.0.0.1 - - [29/May/2018:10:19:21 -0400] "GET /imputation/gwt/clean/images/hborder.png HTTP/1.1" 200 1995
+127.0.0.1 - - [29/May/2018:10:19:21 -0400] "GET /imputation/581BCA15D76A1A46FA04C20E71DD1B6E.cache.png HTTP/1.1" 200 828196
+127.0.0.1 - - [29/May/2018:10:19:22 -0400] "GET /imputation/A75817E75CE753B5DC4E31270BA77E99.cache.jpg HTTP/1.1" 200 50785
+127.0.0.1 - - [29/May/2018:10:19:20 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=2;callback=callback0 HTTP/1.1" 200 88
+127.0.0.1 - - [29/May/2018:10:19:28 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P35520[CBS(LowB6)];callback=callback1 HTTP/1.1" 200 9734618
+127.0.0.1 - - [29/May/2018:10:19:32 -0400] "GET /wsgi/imputation_wsgi.wsgi?queryflag=3;landscape_name=P63279[UBE2I];callback=callback2 HTTP/1.1" 200 2817238

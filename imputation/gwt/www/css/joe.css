@@ -1,0 +1,259 @@
+/** Add css rules here for your application. */
+.backgroundImage{
+	background-image: url("background.jpg");
+}
+
+.borderPanel{
+    border: 2px solid silver;
+    border-radius: 5px;
+}
+
+.verticalPanelImage{
+	background-image: url("b1.jpg");
+}
+
+.spChartCell{
+	color: black;
+	background-color: white;
+}
+.HeaderButton{
+	background-color: #2062B8;
+	color: white;
+	cursor:pointer; 
+    cursor:hand; 	
+}	
+	
+.text {
+	background-color: burlywood;
+	font-size: 2.5em;
+	color: steelblue;
+	text-align: left;
+}
+	
+.label {
+	color: blue;
+	font-size: 2.5em;
+	font-family: Bookman Old Style;
+	white-space: nowrap;
+}
+
+.tblColumnAlign{
+	align:center;
+}
+	
+.poplabel {
+	color: orangered;
+	border-bottom: solid;
+	font-size: 1.5em;
+	font-family: Bookman Old Style;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.label1 {
+	color: blue;
+	font-size: 1.5em;
+	font-family: Bookman Old Style;
+	white-space: nowrap;
+}
+
+.label2 {
+	borderStyle: solid;
+	color: blue;
+	border: solid;
+	font-size: 1.5em;
+	font-family: Bookman Old Style;
+	text-align: right;
+	white-space: pre-wrap;	
+}
+
+.ImagePointer-enter { 
+  cursor:pointer; 
+  cursor:hand; 
+}
+
+.TableHeader {
+  background-color: #2062B8;
+  border:1px solid green;
+  color: white;
+  font-style: bold;
+}
+
+.categoryTableRow {
+  background-color: #2062B8;
+  color: black;
+  font-style: bold;
+}
+
+.categoryTable {
+  /*border: 1px solid silver;*/
+  padding: 1px;
+  margin-bottom:6px;
+  width:100%;
+}
+
+.chartTableFix{
+	color: black;
+	font-size: 1.2em;
+	font-style: normal;
+	font-weight: bold;
+	background-color: White;
+}
+
+.panel {
+	border: 1px;
+	background-color: lightslategray;
+}
+
+.panel1 {
+	border: 1px;
+	background-color: red;
+}
+
+.ScrollPanel{
+	background-color: #2062B8;
+}
+
+.UpPanel {
+	background-color: #ADDFFF;
+}
+
+.PopUpPanel {
+	background-color: white;
+}
+
+.Button{
+   cursor:pointer; 
+   cursor:hand; 	
+   border-top: 1px solid #96d1f8;
+   background: #65a9d7;
+   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+   background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+   background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+   background: -o-linear-gradient(top, #3e779d, #65a9d7);
+   padding: 6px 12px;
+   -webkit-border-radius: 21px;
+   -moz-border-radius: 21px;
+   border-radius: 21px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: white;
+   font-size: 15px;
+   font-family: Helvetica, Arial, Sans-Serif;
+   text-decoration: none;
+   vertical-align: middle;
+}
+.poplabel1 {
+	color: darkviolet;
+	font-size: 1.2em;
+	font-family: Bookman Old Style;
+}
+.label3 {
+	color: chocolate;
+	font-size: 1.3em;
+	font-family: Tahoma;
+	vertical-align: bottom;
+	text-align: right;
+}
+
+/* .gwt-DialogBox .Caption {
+   background: #e3e8f3 url(images/hborder.png) repeat-x 0px -2003px;
+   padding: 4px 4px 4px 8px;
+   cursor: default;
+   border-bottom: 1px solid #bbbbbb;
+   border-top: 5px solid #d0e4f6;
+}
+
+.gwt-DialogBox .dialogContent {
+}
+
+.gwt-DialogBox .dialogMiddleCenter {
+   padding: 3px;
+   background: white;
+}
+
+.gwt-DialogBox .dialogBottomCenter {
+   background: url(images/hborder.png) repeat-x 0px -4px;
+   -background: url(images/hborder_ie6.png) repeat-x 0px -4px;
+}
+
+.gwt-DialogBox .dialogMiddleLeft {
+   background: url(images/vborder.png) repeat-y;
+}
+
+.gwt-DialogBox .dialogMiddleRight {
+   background: url(images/vborder.png) repeat-y -4px 0px;
+   -background: url(images/vborder_ie6.png) repeat-y -4px 0px;
+}
+
+.gwt-DialogBox .dialogTopLeftInner {
+   width: 5px;
+   zoom: 1;
+}
+
+.gwt-DialogBox .dialogTopRightInner {
+   width: 8px;
+   zoom: 1;
+}
+
+.gwt-DialogBox .dialogBottomLeftInner {
+   width: 5px;
+   height: 8px;
+   zoom: 1;
+}
+
+.gwt-DialogBox .dialogBottomRightInner {
+   width: 5px;
+   height: 8px;
+   zoom: 1;
+}
+
+.gwt-DialogBox .dialogTopLeft {
+   background: url(images/corner.png) no-repeat -13px 0px;
+   -background: url(images/corner_ie6.png) no-repeat -13px 0px;
+}
+
+.gwt-DialogBox .dialogTopRight {
+   background: url(images/corner.png) no-repeat -18px 0px;
+   -background: url(images/corner_ie6.png) no-repeat -18px 0px;
+}
+
+.gwt-DialogBox .dialogBottomLeft {
+   background: url(images/corner.png) no-repeat 0px -15px;
+   -background: url(images/corner_ie6.png) no-repeat 0px -15px;
+}
+
+.gwt-DialogBox .dialogBottomRight {
+   background: url(images/corner.png) no-repeat -5px -15px;
+   -background: url(images/corner_ie6.png) no-repeat -5px -15px;
+}
+
+html>body .gwt-DialogBox {
+}
+
+* html .gwt-DialogBox .dialogTopLeftInner {
+   width: 5px;
+   overflow: hidden;
+}
+
+* html .gwt-DialogBox .dialogTopRightInner {
+   width: 8px;
+   overflow: hidden;
+}
+
+* html .gwt-DialogBox .dialogBottomLeftInner {
+   width: 5px;
+   height: 8px;
+   overflow: hidden;
+}
+
+* html .gwt-DialogBox .dialogBottomRightInner {
+   width: 8px;
+   height: 8px;
+   overflow: hidden;
+}
+
+ */

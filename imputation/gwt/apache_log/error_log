@@ -1,0 +1,84 @@
+[Thu May 24 22:16:06.462262 2018] [wsgi:info] [pid 486] [remote 127.0.0.1:52632] mod_wsgi (pid=486): Force restart of process 'imputation'.
+[Thu May 24 22:16:06.462594 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Shutdown requested 'imputation'.
+[Thu May 24 22:16:06.462766 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Stopping process 'imputation'.
+[Thu May 24 22:16:06.462791 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Destroying interpreters.
+[Thu May 24 22:16:06.462806 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Cleanup interpreter ''.
+[Thu May 24 22:16:06.463043 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Terminating Python.
+[Thu May 24 22:16:06.462801 2018] [wsgi:info] [pid 5346] [client 127.0.0.1:52632] mod_wsgi (pid=5346): Connect after WSGI daemon process restart, attempt #1.
+[Thu May 24 22:16:06.740539 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Python has shutdown.
+[Thu May 24 22:16:06.740642 2018] [wsgi:info] [pid 486] mod_wsgi (pid=486): Exiting process 'imputation'.
+[Thu May 24 22:16:07.822849 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Attach interpreter ''.
+[Thu May 24 22:16:07.827325 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Imported 'mod_wsgi'.
+[Thu May 24 22:16:07.828166 2018] [wsgi:info] [pid 5766] [remote 127.0.0.1:52632] mod_wsgi (pid=5766, process='imputation', application=''): Loading WSGI script '/Users/joewu/Google_Drive/Business/AlphaMe/Source_Code/Python/Dropbox/Python_GI/imputation/imputation_wsgi.wsgi'.
+[Thu May 24 22:16:10.297934 2018] [wsgi:error] [pid 5766] /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+[Thu May 24 22:16:10.298079 2018] [wsgi:error] [pid 5766]   "This module will be removed in 0.20.", DeprecationWarning)
+[Thu May 24 22:31:41.022605 2018] [reqtimeout:info] [pid 491] [client 127.0.0.1:53129] AH01382: Request header read timeout
+[Thu May 24 22:37:12.228912 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:53153] AH01382: Request header read timeout
+[Thu May 24 22:38:28.596895 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:53158] AH01382: Request header read timeout
+[Thu May 24 22:38:58.683938 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:53162] AH01382: Request header read timeout
+[Thu May 24 22:38:58.683938 2018] [reqtimeout:info] [pid 5346] [client 127.0.0.1:53161] AH01382: Request header read timeout
+[Thu May 24 22:39:54.760937 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:53174] AH01382: Request header read timeout
+[Thu May 24 22:40:54.653877 2018] [wsgi:info] [pid 5766] [remote 127.0.0.1:53179] mod_wsgi (pid=5766): Force restart of process 'imputation'.
+[Thu May 24 22:40:54.654313 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Shutdown requested 'imputation'.
+[Thu May 24 22:40:54.654474 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Stopping process 'imputation'.
+[Thu May 24 22:40:54.654514 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Destroying interpreters.
+[Thu May 24 22:40:54.654554 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Cleanup interpreter ''.
+[Thu May 24 22:40:54.654488 2018] [wsgi:info] [pid 5347] [client 127.0.0.1:53179] mod_wsgi (pid=5347): Connect after WSGI daemon process restart, attempt #1., referer: http://127.0.0.1:8888/Imputation.html
+[Thu May 24 22:40:54.654909 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Terminating Python.
+[Thu May 24 22:40:54.968508 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Python has shutdown.
+[Thu May 24 22:40:54.968625 2018] [wsgi:info] [pid 5766] mod_wsgi (pid=5766): Exiting process 'imputation'.
+[Thu May 24 22:40:55.204268 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Attach interpreter ''.
+[Thu May 24 22:40:55.208197 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Imported 'mod_wsgi'.
+[Thu May 24 22:40:55.208843 2018] [wsgi:info] [pid 6162] [remote 127.0.0.1:53179] mod_wsgi (pid=6162, process='imputation', application=''): Loading WSGI script '/Users/joewu/Google_Drive/Business/AlphaMe/Source_Code/Python/Dropbox/Python_GI/imputation/imputation_wsgi.wsgi'.
+[Thu May 24 22:40:57.925261 2018] [wsgi:error] [pid 6162] /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+[Thu May 24 22:40:57.925464 2018] [wsgi:error] [pid 6162]   "This module will be removed in 0.20.", DeprecationWarning)
+[Thu May 24 22:41:14.719241 2018] [reqtimeout:info] [pid 5346] [client 127.0.0.1:53180] AH01382: Request header read timeout
+[Thu May 24 22:47:56.593540 2018] [reqtimeout:info] [pid 491] [client 127.0.0.1:53207] AH01382: Request header read timeout
+[Thu May 24 23:02:03.578805 2018] [reqtimeout:info] [pid 5346] [client 127.0.0.1:53283] AH01382: Request header read timeout
+[Thu May 24 23:02:03.578805 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:53282] AH01382: Request header read timeout
+[Thu May 24 23:09:13.596599 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:53322] AH01382: Request header read timeout
+[Thu May 24 23:09:13.596599 2018] [reqtimeout:info] [pid 491] [client 127.0.0.1:53323] AH01382: Request header read timeout
+[Fri May 25 10:11:23.527076 2018] [core:info] [pid 5342] [client 127.0.0.1:54365] AH00128: File does not exist: /Users/joewu/Google_Drive/Business/AlphaMe/Source_Code/GWT/imputation/war/favicon.ico, referer: http://127.0.0.1:1024/
+[Fri May 25 10:52:47.184769 2018] [reqtimeout:info] [pid 5346] [client 127.0.0.1:54548] AH01382: Request header read timeout
+[Fri May 25 10:52:47.192375 2018] [reqtimeout:info] [pid 6606] [client 127.0.0.1:54551] AH01382: Request header read timeout
+[Fri May 25 10:52:47.197170 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:54550] AH01382: Request header read timeout
+[Fri May 25 10:52:47.197171 2018] [reqtimeout:info] [pid 491] [client 127.0.0.1:54549] AH01382: Request header read timeout
+[Fri May 25 10:52:47.197495 2018] [reqtimeout:info] [pid 6608] [client 127.0.0.1:54552] AH01382: Request header read timeout
+[Fri May 25 10:53:30.849870 2018] [reqtimeout:info] [pid 5346] [client 127.0.0.1:54560] AH01382: Request header read timeout
+[Fri May 25 10:53:30.849868 2018] [reqtimeout:info] [pid 6606] [client 127.0.0.1:54561] AH01382: Request header read timeout
+[Fri May 25 10:53:30.850096 2018] [reqtimeout:info] [pid 6608] [client 127.0.0.1:54563] AH01382: Request header read timeout
+[Fri May 25 10:53:30.850027 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:54559] AH01382: Request header read timeout
+[Fri May 25 10:53:30.849901 2018] [reqtimeout:info] [pid 491] [client 127.0.0.1:54562] AH01382: Request header read timeout
+[Fri May 25 10:54:39.859434 2018] [reqtimeout:info] [pid 491] [client 127.0.0.1:54571] AH01382: Request header read timeout
+[Fri May 25 10:54:39.859423 2018] [reqtimeout:info] [pid 6606] [client 127.0.0.1:54569] AH01382: Request header read timeout
+[Fri May 25 10:54:39.859434 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:54570] AH01382: Request header read timeout
+[Fri May 25 10:54:39.859446 2018] [reqtimeout:info] [pid 6608] [client 127.0.0.1:54572] AH01382: Request header read timeout
+[Fri May 25 10:54:39.859517 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:54573] AH01382: Request header read timeout
+[Fri May 25 14:14:01.237815 2018] [reqtimeout:info] [pid 6606] [client 127.0.0.1:55000] AH01382: Request header read timeout
+[Fri May 25 14:14:01.237815 2018] [reqtimeout:info] [pid 6608] [client 127.0.0.1:55003] AH01382: Request header read timeout
+[Fri May 25 14:14:01.237809 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:55001] AH01382: Request header read timeout
+[Fri May 25 14:14:01.237809 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:55002] AH01382: Request header read timeout
+[Fri May 25 15:50:15.378783 2018] [reqtimeout:info] [pid 5347] [client 127.0.0.1:55517] AH01382: Request header read timeout
+[Fri May 25 15:50:15.378784 2018] [reqtimeout:info] [pid 5342] [client 127.0.0.1:55518] AH01382: Request header read timeout
+[Fri May 25 15:50:15.378801 2018] [reqtimeout:info] [pid 6608] [client 127.0.0.1:55519] AH01382: Request header read timeout
+[Fri May 25 15:50:15.378959 2018] [reqtimeout:info] [pid 6609] [client 127.0.0.1:55520] AH01382: Request header read timeout
+[Sun May 27 22:41:13.391390 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Shutdown requested 'imputation'.
+[Sun May 27 22:41:13.499138 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Stopping process 'imputation'.
+[Sun May 27 22:41:13.586756 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Destroying interpreters.
+[Sun May 27 22:41:13.588804 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Cleanup interpreter ''.
+[Sun May 27 22:41:14.309655 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Terminating Python.
+[Sun May 27 22:41:17.164675 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Python has shutdown.
+[Sun May 27 22:41:17.166785 2018] [wsgi:info] [pid 6162] mod_wsgi (pid=6162): Exiting process 'imputation'.
+[Sun May 27 22:43:28.657165 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Attach interpreter ''.
+[Sun May 27 22:43:28.705083 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Imported 'mod_wsgi'.
+[Tue May 29 10:19:20.382532 2018] [wsgi:info] [pid 488] [remote 127.0.0.1:57280] mod_wsgi (pid=488, process='imputation', application=''): Loading WSGI script '/Users/joewu/Google_Drive/Business/AlphaMe/Source_Code/Python/Dropbox/Python_GI/imputation/imputation_wsgi.wsgi'.
+[Tue May 29 10:19:20.456772 2018] [core:info] [pid 493] [client 127.0.0.1:57279] AH00128: File does not exist: /Users/joewu/Google_Drive/Business/AlphaMe/Source_Code/GWT/imputation/war/favicon.ico, referer: http://127.0.0.1:1024/
+[Tue May 29 10:19:24.112001 2018] [wsgi:error] [pid 488] /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/sklearn/cross_validation.py:41: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+[Tue May 29 10:19:24.112189 2018] [wsgi:error] [pid 488]   "This module will be removed in 0.20.", DeprecationWarning)
+[Tue May 29 10:46:02.830080 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Shutdown requested 'imputation'.
+[Tue May 29 10:46:02.847703 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Stopping process 'imputation'.
+[Tue May 29 10:46:02.847772 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Destroying interpreters.
+[Tue May 29 10:46:02.847853 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Cleanup interpreter ''.
+[Tue May 29 10:46:02.849656 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Terminating Python.
+[Tue May 29 10:46:03.465979 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Python has shutdown.
+[Tue May 29 10:46:03.466268 2018] [wsgi:info] [pid 488] mod_wsgi (pid=488): Exiting process 'imputation'.
