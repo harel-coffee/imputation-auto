@@ -16,7 +16,7 @@ import matplotlib
 matplotlib.use('Agg') 
 import matplotlib.pyplot as plt 
 python_path = '/usr/local/projects/ml/python/'
-project_path = '/usr/local/projects/imputation/gwt/www/'
+project_path = '/usr/local/projects/imputation/project/'
 humandb_path = '/usr/local/database/humandb/'
 sys.path.append(python_path)
 import alm_gi

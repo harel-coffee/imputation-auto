@@ -3430,3 +3430,115 @@
 [Wed Oct 17 19:27:54.974122 2018] [wsgi:error] [pid 19:tid 139645799315200] [remote 172.17.0.1:43246]   File "/usr/local/projects/imputation/python/imputation_wsgi.wsgi", line 19, in application
 [Wed Oct 17 19:27:54.974551 2018] [wsgi:error] [pid 19:tid 139645799315200] [remote 172.17.0.1:43246]     pickle_out = open(project_path + "output/" + str(dict_arg.get('sessionid','none')) + "_" +  str(dict_arg['queryflag'])  +".pickle", "wb")
 [Wed Oct 17 19:27:54.975185 2018] [wsgi:error] [pid 19:tid 139645799315200] [remote 172.17.0.1:43246] FileNotFoundError: [Errno 2] No such file or directory: '/usr/local/projects/imputation/gwt/www/output/none_-1.pickle'
+[Wed Oct 17 21:12:50.115661 2018] [wsgi:info] [pid 19:tid 139645681694464] [remote 172.17.0.1:43258] mod_wsgi (pid=19): Force restart of process 'imputation'.
+[Wed Oct 17 21:12:50.116299 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Shutdown requested 'imputation'.
+[Wed Oct 17 21:12:50.116629 2018] [wsgi:info] [pid 20:tid 139645014763264] [client 172.17.0.1:43258] mod_wsgi (pid=20): Connect after WSGI daemon process restart, attempt #1., referer: http://impute.varianteffect.org/
+[Wed Oct 17 21:12:50.117254 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Stopping process 'imputation'.
+[Wed Oct 17 21:12:50.118183 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Destroying interpreters.
+[Wed Oct 17 21:12:50.118592 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Cleanup interpreter ''.
+[Wed Oct 17 21:12:50.119073 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Terminating Python.
+[Wed Oct 17 21:12:50.451010 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Python has shutdown.
+[Wed Oct 17 21:12:50.451839 2018] [wsgi:info] [pid 19:tid 139645908753344] mod_wsgi (pid=19): Exiting process 'imputation'.
+[Wed Oct 17 21:12:50.564779 2018] [wsgi:info] [pid 142:tid 139645908753344] mod_wsgi (pid=142): Attach interpreter ''.
+[Wed Oct 17 21:12:50.574120 2018] [wsgi:info] [pid 142:tid 139645799315200] [remote 172.17.0.1:43258] mod_wsgi (pid=142, process='imputation', application=''): Loading WSGI script '/usr/local/projects/imputation/python/imputation_wsgi.wsgi'.
+[Wed Oct 17 21:12:55.060201 2018] [wsgi:error] [pid 142:tid 139645799315200] Using TensorFlow backend.
+[Wed Oct 17 21:13:27.743179 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [imputation] [__init__]......starts @2018-10-17 21:13:27.743137
+[Wed Oct 17 21:13:27.743886 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [imputation] Fun: [data_init] .... starts @2018-10-17 21:13:27.743834
+[Wed Oct 17 21:13:27.744580 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [imputation] Fun: [data_preprocess] starts @2018-10-17 21:13:27.744554
+[Wed Oct 17 21:13:27.745308 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Processing data [P38398[BRCA1-RING]]......
+[Wed Oct 17 21:13:29.319407 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [imputation] Fun: [data_preprocess] done @2018-10-17 21:13:29.319378
+[Wed Oct 17 21:13:29.320176 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.331747 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [imputation] Fun: [data_init] .... done @2018-10-17 21:13:29.331720
+[Wed Oct 17 21:13:29.332556 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.333207 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [alm_ml] [__init__]......done @2018-10-17 21:13:29.333180
+[Wed Oct 17 21:13:29.334029 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [alm_data] [__init__] P38398[BRCA1-RING] ......done @2018-10-17 21:13:29.334011
+[Wed Oct 17 21:13:29.334802 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [alm_project] [__init__]......done @2018-10-17 21:13:29.334781
+[Wed Oct 17 21:13:29.335449 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [imputation] Fun: [__init__] .... done @2018-10-17 21:13:29.335433
+[Wed Oct 17 21:13:29.336176 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.336843 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] **Class: [imputation] Fun: [imputation_run] .... starts @2018-10-17 21:13:29.336820
+[Wed Oct 17 21:13:29.345743 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [load_data]
+[Wed Oct 17 21:13:29.346246 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] train_data [702,119]
+[Wed Oct 17 21:13:29.346745 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] test_data [0,119]
+[Wed Oct 17 21:13:29.347386 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] target_data [2121,119]
+[Wed Oct 17 21:13:29.348417 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.354334 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [slice_data]
+[Wed Oct 17 21:13:29.355036 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] train_data [575,119]
+[Wed Oct 17 21:13:29.355670 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] test_data [0,119]
+[Wed Oct 17 21:13:29.356292 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] target_data [1919,119]
+[Wed Oct 17 21:13:29.356865 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.357496 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [filter_data]
+[Wed Oct 17 21:13:29.357946 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] train_data [575,119]
+[Wed Oct 17 21:13:29.358461 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] test_data [0,119]
+[Wed Oct 17 21:13:29.358932 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] target_data [1919,119]
+[Wed Oct 17 21:13:29.359439 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.378759 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [split_data]
+[Wed Oct 17 21:13:29.379221 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] train_data [575,119]
+[Wed Oct 17 21:13:29.379689 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] test_data [0,119]
+[Wed Oct 17 21:13:29.380200 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] target_data [1919,119]
+[Wed Oct 17 21:13:29.380794 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.408640 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [gradient_data]
+[Wed Oct 17 21:13:29.409336 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] train_data [575,119]
+[Wed Oct 17 21:13:29.409874 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] test_data [0,119]
+[Wed Oct 17 21:13:29.410414 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] target_data [1919,119]
+[Wed Oct 17 21:13:29.410892 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:29.439351 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [alphame_project] Fun: [run] -- Current Modes: ['gradient_comparison'] Current Data: P38398[BRCA1-RING], data preparation time was 0.101408 seconds
+[Wed Oct 17 21:13:29.791783 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.190295 seconds
+[Wed Oct 17 21:13:30.181162 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.175442 seconds
+[Wed Oct 17 21:13:30.589499 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.184945 seconds
+[Wed Oct 17 21:13:30.968371 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.157636 seconds
+[Wed Oct 17 21:13:31.331698 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.127764 seconds
+[Wed Oct 17 21:13:31.619891 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.104993 seconds
+[Wed Oct 17 21:13:31.873209 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.0850983 seconds
+[Wed Oct 17 21:13:32.093803 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.0695646 seconds
+[Wed Oct 17 21:13:32.287106 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.062525 seconds
+[Wed Oct 17 21:13:32.442061 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.0482838 seconds
+[Wed Oct 17 21:13:32.571152 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.0416729 seconds
+[Wed Oct 17 21:13:32.634173 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266]                                                               params           gradient cv_score cv_score_ste  cv_score_se
+[Wed Oct 17 21:13:32.634730 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] no_gradient        {'base_score': 0.5, 'booster': 'gbtree', 'cols...        no_gradient   0.2717          NaN          NaN
+[Wed Oct 17 21:13:32.635385 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 150.0              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              150.0   0.2717          NaN          NaN
+[Wed Oct 17 21:13:32.635939 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 218.3              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              218.3   0.2731          NaN          NaN
+[Wed Oct 17 21:13:32.636519 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 286.6              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              286.6   0.2808          NaN          NaN
+[Wed Oct 17 21:13:32.636976 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 354.9              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              354.9   0.2773          NaN          NaN
+[Wed Oct 17 21:13:32.637536 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 423.2              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              423.2   0.2735          NaN          NaN
+[Wed Oct 17 21:13:32.638095 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 491.5              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              491.5   0.2874          NaN          NaN
+[Wed Oct 17 21:13:32.638583 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 559.8              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              559.8    0.296          NaN          NaN
+[Wed Oct 17 21:13:32.639086 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 628.0999999999999  {'base_score': 0.5, 'booster': 'gbtree', 'cols...  628.0999999999999   0.3083          NaN          NaN
+[Wed Oct 17 21:13:32.639619 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 696.4              {'base_score': 0.5, 'booster': 'gbtree', 'cols...              696.4   0.3226          NaN          NaN
+[Wed Oct 17 21:13:32.640275 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 764.6999999999999  {'base_score': 0.5, 'booster': 'gbtree', 'cols...  764.6999999999999   0.3153          NaN          NaN
+[Wed Oct 17 21:13:32.640774 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] 
+[Wed Oct 17 21:13:32.659581 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [alphame_project] Fun: [run] -- Current Mode: [gradient_comparison] Current Data: P38398[BRCA1-RING], running time was 3.21937 seconds
+[Wed Oct 17 21:13:33.654278 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] [K:3 orderby: fs] running time was 0.806227 seconds
+[Wed Oct 17 21:13:33.716010 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] Class: [alphame_project] Fun: [run] -- Current Mode: [prediction] Current Data: P38398[BRCA1-RING], running time was 1.05544 seconds
+[Wed Oct 17 21:13:35.040521 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] additional tracks running time was 0.0560005 seconds
+[Wed Oct 17 21:13:35.463646 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] ordered genophenogram running time was 0.42215 seconds
+[Wed Oct 17 21:13:36.006781 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] adding error lines running time was 0.0813172 seconds
+[Wed Oct 17 21:13:36.007367 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] size:2121
+[Wed Oct 17 21:13:37.110464 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] additional tracks running time was 0.0532529 seconds
+[Wed Oct 17 21:13:37.569226 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] ordered genophenogram running time was 0.457905 seconds
+[Wed Oct 17 21:13:38.135417 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] adding error lines running time was 0.0786216 seconds
+[Wed Oct 17 21:13:38.136140 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] size:2121
+[Wed Oct 17 21:13:39.116112 2018] [wsgi:error] [pid 142:tid 139645799315200] [remote 172.17.0.1:43266] **Class: [imputation] Fun: [run_imputation] .... done @2018-10-17 21:13:39.116075
+[Thu Oct 18 02:37:59.325458 2018] [core:info] [pid 20:tid 139645392238336] [client 172.17.0.1:43310] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image001.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.327961 2018] [core:info] [pid 20:tid 139645383845632] [client 172.17.0.1:43312] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image002.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.329293 2018] [core:info] [pid 21:tid 139644276565760] [client 172.17.0.1:43320] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image006.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.331469 2018] [core:info] [pid 20:tid 139645375452928] [client 172.17.0.1:43314] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image003.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.333343 2018] [core:info] [pid 21:tid 139645576746752] [client 172.17.0.1:43316] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image004.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.334689 2018] [core:info] [pid 20:tid 139645023155968] [client 172.17.0.1:43318] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image005.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.383188 2018] [core:info] [pid 20:tid 139644997977856] [client 172.17.0.1:43318] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image007.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:37:59.383931 2018] [core:info] [pid 21:tid 139644268173056] [client 172.17.0.1:43316] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image008.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.822245 2018] [core:info] [pid 20:tid 139645782521600] [client 172.17.0.1:43342] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image004.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.829667 2018] [core:info] [pid 20:tid 139645417416448] [client 172.17.0.1:43336] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image001.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.841225 2018] [core:info] [pid 20:tid 139645425809152] [client 172.17.0.1:43340] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image002.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.874881 2018] [core:info] [pid 20:tid 139645400631040] [client 172.17.0.1:43338] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image003.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.894692 2018] [core:info] [pid 20:tid 139645392238336] [client 172.17.0.1:43344] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image005.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.896406 2018] [core:info] [pid 20:tid 139645383845632] [client 172.17.0.1:43334] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image006.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.912421 2018] [core:info] [pid 20:tid 139645375452928] [client 172.17.0.1:43342] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image007.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:20.913105 2018] [core:info] [pid 20:tid 139645023155968] [client 172.17.0.1:43336] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image008.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.469891 2018] [core:info] [pid 21:tid 139645799315200] [client 172.17.0.1:43348] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image002.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.470798 2018] [core:info] [pid 21:tid 139645652281088] [client 172.17.0.1:43352] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image005.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.516498 2018] [core:info] [pid 20:tid 139644997977856] [client 172.17.0.1:43350] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image003.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.518175 2018] [core:info] [pid 21:tid 139645660673792] [client 172.17.0.1:43354] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image004.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.525800 2018] [core:info] [pid 21:tid 139645790922496] [client 172.17.0.1:43356] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image001.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.527121 2018] [core:info] [pid 21:tid 139645643888384] [client 172.17.0.1:43346] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image006.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.540996 2018] [core:info] [pid 21:tid 139645669066496] [client 172.17.0.1:43352] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image007.jpg, referer: http://impute.varianteffect.org/
+[Thu Oct 18 02:45:41.541479 2018] [core:info] [pid 21:tid 139645635495680] [client 172.17.0.1:43348] AH00128: File does not exist: /usr/local/projects/imputation/gwt/www/imputation_help.fld/image008.jpg, referer: http://impute.varianteffect.org/

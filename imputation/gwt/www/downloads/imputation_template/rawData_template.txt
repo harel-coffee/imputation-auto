@@ -1,0 +1,2 @@
+wt_aa	pos	mut_aa	wt_codon	mut_codon	annotation	nonselect	select	controlNS	controlS	replicate_id
+F	22	G	TTT	GGT	NONSYN	0.540421356	0	0	0	

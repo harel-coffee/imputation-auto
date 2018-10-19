@@ -36,7 +36,7 @@ from datetime import datetime
 from statistics import mode
 
 python_path = '/usr/local/projects/ml/python/'
-project_path = '/usr/local/projects/imputation/gwt/www/'
+project_path = '/usr/local/projects/imputation/project/'
 sys.path.append(python_path)
 import alm_project
 import alm_fun

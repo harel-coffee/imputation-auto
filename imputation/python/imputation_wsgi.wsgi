@@ -4,7 +4,7 @@ import cgitb
 import pickle
 cgitb.enable() 
 python_path = '/usr/local/projects/imputation/python/'
-project_path = '/usr/local/projects/imputation/gwt/www/'
+project_path = '/usr/local/projects/imputation/project/'
 sys.path.append(python_path)
 import imputation_web 
 

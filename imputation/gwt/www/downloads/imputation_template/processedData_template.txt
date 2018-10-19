@@ -1,0 +1,2 @@
+aa_ref	aa_pos	aa_alt	quality_score	num_replicates	fitness_input	fitness_input_sd
+Q	111	C	396.1804617	2	1.37422053	0.003539046

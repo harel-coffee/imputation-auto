@@ -65,7 +65,7 @@ public class Imputation implements EntryPoint {
 	  
 	  public String Jochen_Download_URL = SERVER_URL + "downloads/Weile2017.zip";
 	  public String template_Download_URL = SERVER_URL + "downloads/imputation_template.zip";
-	  public String example_Download_URL = SERVER_URL + "downloads/imputation_example_UBE2I.zip";
+	  public String example_Download_URL = SERVER_URL + "downloads/imputation_example.zip";
 	  public String uniprot_list_Download_URL = SERVER_URL + "downloads/supported_uniprot_ids.txt";
 	  public String help_Download_URL = SERVER_URL + "downloads/imputation_help.pdf";
 	  public int jsonRequestId = 0;
@@ -700,11 +700,12 @@ public class Imputation implements EntryPoint {
 		  
 		  img_help_view_landscape.addClickHandler(new ClickHandler() {
 			    @Override
-			    public void onClick(ClickEvent event) {			        
+			    public void onClick(ClickEvent event) {	
+					  HelpPopupPanel.hide();
 					  HelpPopupPanel.center();
 					  HelpPopupPanel.show();					 
-					  panel_help_html.getElementById("#_Toc520809774").scrollIntoView();
-					  panel_help_scroll.setVerticalScrollPosition(panel_help_scroll.getVerticalScrollPosition() + (int) Math.round(s_height*0.55) - 2*panel_help_html.getElementById("#_Toc520809774").getOffsetHeight());
+					  panel_help_html.getElementById("_Toc520809774").scrollIntoView();
+					  panel_help_scroll.setVerticalScrollPosition(panel_help_scroll.getVerticalScrollPosition() + (int) Math.round(s_height*0.55) - 2*panel_help_html.getElementById("_Toc520809774").getOffsetHeight());
 			    } 
 		  });
 		  
