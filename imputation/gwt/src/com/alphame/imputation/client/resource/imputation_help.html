@@ -32,11 +32,11 @@
 	{font-family:Cambria;
 	panose-1:2 4 5 3 5 4 6 3 2 4;}
 @font-face
-	{font-family:"Lucida Grande";
-	panose-1:2 11 6 0 4 5 2 2 2 4;}
-@font-face
 	{font-family:Tahoma;
 	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Lucida Grande";
+	panose-1:2 11 6 0 4 5 2 2 2 4;}
 @font-face
 	{font-family:"\@SimSun";
 	panose-1:2 1 6 0 3 1 1 1 1 1;}
@@ -757,7 +757,7 @@ text-indent:0cm'><b><span style='font-size:12.0pt;line-height:115%;font-family:
 Toolkit User Guide</span></b></p>
 
 <p class=MsoToc1><span
-class=MsoHyperlink><span lang=EN-US><a href=#_Toc520809761>1.<span
+class=MsoHyperlink><span lang=EN-US><a href="#_Toc520809761">1.<span
 lang=EN-US style='font-size:12.0pt;line-height:105%;text-transform:none;
 font-weight:normal;text-decoration:none'>    </span>Upload and impute<span
 style='display:none'>  </span><span
@@ -871,7 +871,7 @@ normal !important;font-weight:normal;text-decoration:none'>    </span>Downloa
 Supported Uniprot IDs<span style='display:none;text-decoration:none'> </span><span style='display:none;text-decoration:none'>7</span></a></span></span></p>
 
 <p class=MsoToc1><span class=MsoHyperlink><span lang=EN-US><a
-href="#_Toc527535315">4.<span lang=EN-US style='font-size:12.0pt;line-height:"src/com/alphame/imputation/client/resource/imputation_help.html"
+href="#_Toc527535315">4.<span lang=EN-US style='font-size:12.0pt;line-height:
 105%;text-transform:none;font-weight:normal;text-decoration:none'>    </span>Map
 Viewer<span style='display:none'>  </span><span
 style='display:none'>7</span></a></span></span></p>
@@ -991,15 +991,15 @@ margin-left:0cm;line-height:150%'><span lang=EN-US style='font-family:"Lucida Gr
 to the&nbsp;Human Protein Variants Effect Map Imputation Toolkit User Guide. The
 purpose of this toolkit is to impute, refine and visualize data from
 multiplexed variant effect assays (MAVEs) to produce missense variant effect
-(VE) maps. Specifically, we provide: 1) a front end web application (<span
+(VE) maps. Specifically, we provide: 1) a front-end web application (<span
 class=MsoHyperlink><a href="http://impute.varianteffect.org/">http://impute.varianteffect.org/</a></span><span
 class=MsoHyperlink><span style='text-decoration:none'>, source: </span><a
 href="https://github.com/joewuca/imputation">https://github.com/joewuca/imputation</a></span>)
 that allows users to upload their own MAVE data and visualize or download a
-complete map of variant effects; and 2) a back end data processing service that
-performs imputation and refinement. This user guide will focus on the front end
+complete map of variant effects; and 2) a back-end data processing service that
+performs imputation and refinement. This user guide will focus on the front-end
 web application and proper and effective use of the toolkit. For users
-interested in the back end data processing service, please see previous methods
+interested in the back-end data processing service, please see previous methods
 in Weile et al, (Molecular Systems Biology 2017) and other methodological
 references to be added here as the toolkit evolves to implement other methods.</span></p>
 
@@ -1018,16 +1018,16 @@ Map viewer:</b> for visualizing and downloading finished variant effect maps.</s
 
 <p class=MsoNormal style='margin-top:6.0pt;margin-right:0cm;margin-bottom:6.0pt;
 margin-left:0cm;line-height:150%'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
-color:red'>NOTE:  human protein variant effect maps (imputed or otherwise) are
+color:red'>NOTE:  Human protein variant effect maps (imputed or otherwise) are
 research tools and should be appropriately validated before clinical use.</span></p>
 
 <p class=MsoNormal style='margin-top:6.0pt;margin-right:0cm;margin-bottom:6.0pt;
-margin-left:0cm;line-height:150%'><span style='font-family:"Lucida Grande",sans-serif'>&nbsp;</span></p>
+margin-left:0cm;line-height:150%'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif'>&nbsp;</span></p>
 
 <p class=MsoNormal style='margin-top:6.0pt;margin-right:-3.6pt;margin-bottom:
 6.0pt;margin-left:0cm;line-height:150%'><span lang=EN-US style='font-family:
 "Lucida Grande",sans-serif;color:#222222'><img border=0 width=448 height=223
-id="Picture 4" src="http://impute.varianteffect.org/images/imputation_help.fld/image001.jpg"></span></p>
+id="Picture 4" src="http://impute.varianteffect.org/images/imputation_help.fld/image001.png"></span></p>
 
 <h1><a id="_Toc520809761">1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; 
 </span><span dir=LTR></span>Upload and impute</h1>
@@ -1062,7 +1062,7 @@ approaches.  Please refer to Section 5.2 for the details.</p>
 </span><span dir=LTR></span>Example – UBE2I and BRCA1</a></h3>
 
 <p class=Text3><span lang=EN-US><img border=0 width=54 height=19 id="Picture 1"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image002.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image002.png"></span></p>
 
 <p class=Text3>Clicking the example button will initiate download of a zip file
 with files needed for imputing the variant effect map of two example proteins (UBE2I;
@@ -1127,14 +1127,28 @@ contain the protein sequence from this non-canonical variant.  </p>
 <p style='margin-top:6.0pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
 28.4pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span style='font-size:11.0pt;line-height:150%;font-family:
-"Lucida Grande",sans-serif;color:#222222'>Please input the correct Uniprot ID corresponding
-to your target protein to retrieve the precomputed protein features such as structure
-features, Polyphen2 and SIFT scores. We have precomputed features for the most
-of reviewed Uniprot human IDs in ClinVAR database (Currently ~3200 proteins). The
-full list of supported Uniprot IDs can be download, please check Section 3.4
-for details. If you submit a valid human Uniprot ID that is not in our list, you
-will be given an option to request retrieval of protein features and notified
-by email when this is complete.</span></p>
+"Lucida Grande",sans-serif;color:#222222'>Please input the ID from UniProt </span><span
+style='color:black'>(</span><span style='font-size:11.0pt;line-height:150%;
+font-family:"Lucida Grande",sans-serif;color:#222222'>Bateman, A.&nbsp;</span><i
+style='box-sizing: inherit;font-variant-ligatures: normal;font-variant-caps: normal;
+orphans: 2;text-align:start;widows: 2;-webkit-text-stroke-width: 0px;
+text-decoration-style: initial;text-decoration-color: initial;word-spacing:
+0px'>et al.<span style='font-variant-ligatures: normal;font-variant-caps: normal;
+orphans: 2;text-align:start;widows: 2;-webkit-text-stroke-width: 0px;
+text-decoration-style: initial;text-decoration-color: initial;float:none;
+word-spacing:0px'>,</i> 2017)</span><span style='color:black'> </span><span
+style='font-size:11.0pt;line-height:150%;font-family:"Lucida Grande",sans-serif;
+color:#222222'>that corresponds to your target protein to retrieve the
+precomputed protein features such as structure features, Polyphen2 </span><span
+style='color:black'>(</span><span style='font-size:11.0pt;line-height:150%;
+font-family:"Lucida Grande",sans-serif;color:#222222'>Adzhubei <i>et al.,</i>
+2016), SIFT (Ng, P. C. &amp; Henikoff, S 2011) and PROVEAN (Choi <i>et al.,</i>
+2016) scores. We have precomputed features for the Uniprot human IDs that have
+at least one missense variant in ClinVAR (Landrum, M. J.&nbsp;<i>et al.,</i>
+2018) database (Currently ~3200 proteins). The full list of supported Uniprot
+IDs can be downloaded, please check Section 3.4 for details. If you submit a
+valid human Uniprot ID that is not in our list, you will be given an option to
+request retrieval of protein features and notified by email when completed.</span></p>
 
 <h2><a id="_Toc527535299">1.4<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Set Parameters</a></h2>
@@ -1277,7 +1291,8 @@ background:white'><span style='font-size:11.0pt;line-height:150%;font-family:
 "Lucida Grande",sans-serif;color:#222222'>To view maps for other predictors
 (Polyphen2, SIFT and Provean), input the Uniport ID of interest and click View.
 Note this function is only available for the Uniprot IDs supported by our system
-(See section 3.4). </span></p>
+(See section 3.4). The variant effect maps for the input Uniprot ID will show
+if they have been previously imputed in our system.</span></p>
 
 <h1><a id="_Toc520809777">3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
 </span><span dir=LTR></span>Downloads</a></h1>
@@ -1370,7 +1385,7 @@ with 1 indicating wild-type (WT) fitness.</span></p>
 42.55pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=183 height=44 id="Picture 3"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image003.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image003.png"></span></p>
 
 <h3><a id="_Toc527535321">4.4.2<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Refined Fitness</a></h3>
@@ -1386,7 +1401,7 @@ is 0 to 2 with 1 indicating WT fitness.</span></p>
 43.65pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=183 height=44 id="Picture 6"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image003.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image003.png"></span></p>
 
 <h3><a id="_Toc527535322">4.4.3<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Polyphen Score</a></h3>
@@ -1403,7 +1418,7 @@ the variant has a damaging impact on protein function. </span></p>
 43.65pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=184 height=44 id="Picture 13"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image004.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image004.png"></span></p>
 
 <h3><a id="_Toc527535323">4.4.4<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>SIFT Score</a></h3>
@@ -1421,7 +1436,7 @@ greater than or equal to 0.05 are predicted to be tolerated.&nbsp;</span></p>
 43.65pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=184 height=44 id="Picture 12"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image005.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image005.png"></span></p>
 
 <h3><a id="_Toc527535324">4.4.5<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Provean Score</a></h3>
@@ -1443,7 +1458,7 @@ above the threshold, the variant is predicted to have a &quot;neutral&quot; effe
 43.65pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=184 height=44 id="Picture 9"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image006.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image006.png"></span></p>
 
 <h3><a id="_Toc527535325">4.4.6<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Allele Frequency</a></h3>
@@ -1460,7 +1475,7 @@ The -log10 MAF score ranging from 0.3 to 10.</span></p>
 36.0pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=184 height=44 id="Picture 11"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image007.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image007.png"></span></p>
 
 <h2><a id="_Toc527535326">4.5<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Map Visualization</a> </h2>
@@ -1482,7 +1497,7 @@ ranges from 0 to 1, where 1 indicates the highest accessible surface area value.
 36.0pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;
 background:white'><span lang=EN-US style='font-family:"Lucida Grande",sans-serif;
 color:#222222'><img border=0 width=184 height=44 id="Picture 14"
-src="http://impute.varianteffect.org/images/imputation_help.fld/image008.jpg"></span></p>
+src="http://impute.varianteffect.org/images/imputation_help.fld/image008.png"></span></p>
 
 <h3><a id="_Toc527535328">4.5.2<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
 </span><span dir=LTR></span>Secondary structure (SS) track</a></h3>
@@ -2441,10 +2456,69 @@ view options. </span></p>
 </span><span dir=LTR></span>References</a></h2>
 
 <p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Adzhubei,
+I et al., Predicting functional effect of human missense mutations using
+PolyPhen-2. Curr. Protoc. Hum. Genet. Chapter 7, Unit7.20 (2013).</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
 style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Baldi,
 P., &amp; Long, A Bayesian framework for the analysis of microarray expression
 data: regularized t -test and statistical inferences of gene changes.
-Bioinformatics, 17(6), 509–519 (2001).  </span></p>
+Bioinformatics, 17(6), 509–519 (2001).</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Bateman,
+A. et al. UniProt: The universal protein knowledgebase. Nucleic Acids Re-search45, D158–D169 (2017).</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'> 
+</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Choi,
+Y et al., Predicting the functional effect of amino acid substitutions and
+indels. PLoS One 7, e46688 (2012).</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Findlay,
+G. M.&nbsp;et al.&nbsp;Accurate classification of BRCA1 variants with
+saturation genome editing.&nbsp;Nature&nbsp;(2018).
+doi:10.1038/s41586-018-0461-z</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Henikoff,
+S. &amp; Henikoff, J. G. Amino acid substitution matrices from protein
+blocks.&nbsp;Proceedings of the National Academy of Sciences&nbsp;89,&nbsp;10915–10919
+(1992).</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Landrum,
+M. J.&nbsp;et al.&nbsp;ClinVar: Improving access to variant interpretations and
+supporting evidence.&nbsp;Nucleic Acids Research&nbsp;46,&nbsp;D1062–D1067
+(2018).</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
+
+<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
+style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Ng,
+P. C. &amp; Henikoff, S. Predicting deleterious amino acid
+substitutions.&nbsp;Genome Research11,&nbsp;863–874 (2001).</span></p>
 
 <p class=RefText style='margin-left:39.7pt;line-height:normal'><span
 style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
@@ -2452,17 +2526,10 @@ style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&n
 <p class=RefText style='margin-left:39.7pt;line-height:normal'><span
 style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Weile
 et al., A framework for exhaustively mapping functional missense variants. Mol
-Syst Biol&nbsp;13:&nbsp;957 (2017).</span></p>
+Syst Biol&nbsp;13:&nbsp;957 (2017)&nbsp;</span></p>
 
 <p class=RefText style='margin-left:39.7pt;line-height:normal'><span
 style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>&nbsp;</span></p>
-
-<p class=RefText style='margin-left:39.7pt;line-height:normal'><span
-style='font-size:11.0pt;font-family:"Lucida Grande",sans-serif;color:#222222'>Findlay,
-G. M., Daza, R. M., Martin, B., Zhang, M. D., Leith, A. P., Gasperini, M., …
-Shendure, J. (2018). Accurate functional classification of thousands of BRCA1
-variants with saturation genome editing. BioRxiv.
-https://doi.org/10.1101/294520</span></p>
 
 <p style='margin-top:6.0pt;margin-right:0cm;margin-bottom:6.0pt;margin-left:
 54.0pt;text-align:justify;text-justify:inter-ideograph;line-height:150%;

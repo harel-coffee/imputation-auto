@@ -5,9 +5,11 @@ import os
 import traceback
 import time
 import glob
+import pandas as pd
+import numpy as np
 from datetime import datetime
 python_path = '/usr/local/projects/ml/python/'
-project_path = '/usr/local/projects/imputation/project/'
+project_path = '/usr/local/projects/imputation/gwt/www/'
 humandb_path = '/usr/local/database/humandb/'
 sys.path.append(python_path)
 import alm_fun
@@ -17,7 +19,7 @@ import imputation
 server_address = 'smtp-relay.gmail.com'
 server_port = 587
 login_user = 'noreply@varianteffect.org'
-login_password = 'EnlightenedLlamaInNirvana'
+login_password = 'WoolyMammothInThePorcellanShop'
 from_address = 'noreply@varianteffect.org'
 subject = 'No Reply'
 
@@ -48,7 +50,9 @@ def run_imputation(run_mode, arguments):
             imputation_web_session_log.write('\n' + str(datetime.now()) + '\n') 
             imputation_web_session_log.write('queryflag: ' + str(queryflag) + '\n')
 
-#     try:
+    try:
+
+        
     ####*************************************************************************************************************************************************************
     # queryflag -1 : Get the resolution of the user screen  
     ####*************************************************************************************************************************************************************    
@@ -92,7 +96,7 @@ def run_imputation(run_mode, arguments):
             uploaded_fasta_file.write(dms_fasta_content)
             uploaded_fasta_file.close()
             JSON_Return = "N/A"
-            alm_fun.send_email(server_address,server_port,login_user,login_password,from_address,from_address, subject, create_email_notification_msg(session_id))
+            alm_fun.send_email(server_address,server_port,login_user,login_password,from_address,'joe.wu.ca@gmail.com', 'Imputation Notification', create_email_notification_msg(session_id))
 
         ####*************************************************************************************************************************************************************
         # queryflag 1 : Run imputation and save the result in JSON format to [sessionid].out and send it back to the broswer 
@@ -130,7 +134,7 @@ def run_imputation(run_mode, arguments):
             file_list = []
             callback = arguments['callback']
             
-        #                 imputation_web_log.write('callback: ' + str(callback) + '\n')
+            #       imputation_web_log.write('callback: ' + str(callback) + '\n')
             imputation_web_log.write(str(arguments))  
             for file in glob.glob(project_path + 'output/*.out'):
                 file_name = os.path.basename(file)[:-4]
@@ -153,8 +157,11 @@ def run_imputation(run_mode, arguments):
         #                 imputation_web_log.write('callback: ' + str(callback) + '\n')
             imputation_web_session_log.write(str(arguments) + '\n')
             
+            map_file =  project_path + 'output/' + session_id + '.out'   
             
-            map_file =  project_path + 'output/' + session_id + '.out'           
+            if (session_id[0] == "!") & (not os.path.isfile(map_file)) :
+                create_uniprotid_map(session_id[1:])
+
             if os.path.isfile(map_file):
                 with open(map_file, 'r') as myfile:
                     landscape_JSON = myfile.read()
@@ -193,27 +200,37 @@ def run_imputation(run_mode, arguments):
             if '@' in error_email:               
                  alm_fun.send_email(server_address,server_port,login_user,login_password,from_address,error_email, subject, create_email_error_msg(error_email,session_id)) 
             JSON_Return = str(callback) + '([{"content":"OK"}])' 
-        
+            
+        ####*************************************************************************************************************************************************************
+        # queryflag 6 : View option async  
+        ####*************************************************************************************************************************************************************                     
+        if int(queryflag) == 6:     
+            callback = arguments['callback']            
+            session_id = arguments['sessionid']
+            view_option = arguments['view_option']
+            imputation_web_session_log.write(str(arguments) + '\n')   
+            JSON_Return = str(callback) + '([{"content":"' + view_option +'"}])' 
+#             imputation_web_session_log.write(JSON_Return + '\n')  
         imputation_web_log.close()
         if session_id is not None:    
             imputation_web_session_log.close()
         
         return (JSON_Return)
-#     except:
-#         err_msg = traceback.format_exc()
-#         err_msg = err_msg.replace('\"',' ');
-#         err_msg = err_msg.replace('\'',' ');
-#         print (err_msg + '\n')
-#         callback = arguments.get('callback','no callback')
-#         if arguments.get("sessionid",None) is None:
-#             imputation_web_log.write(err_msg + '\n')
-#             imputation_web_log.close()
-#         else:
-#             imputation_web_session_log.write(err_msg + '\n')
-#             imputation_web_session_log.close()
-#         JSON_Return = str(callback) + '([{"error":"Imputation Error! Please check your inputs or leave your email address on the box below, we will notify you once the problem is found."}])'
-#         return (JSON_Return)
-#      
+    except:
+        err_msg = traceback.format_exc()
+        err_msg = err_msg.replace('\"',' ');
+        err_msg = err_msg.replace('\'',' ');
+        print (err_msg + '\n')
+        callback = arguments.get('callback','no callback')
+        if arguments.get("sessionid",None) is None:
+            imputation_web_log.write(err_msg + '\n')
+            imputation_web_log.close()
+        else:
+            imputation_web_session_log.write(err_msg + '\n')
+            imputation_web_session_log.close()
+        JSON_Return = str(callback) + '([{"error":"Imputation Error! Please check your inputs or leave your email address on the box below, we will notify you once the problem is found."}])'
+        return (JSON_Return)
+      
      
 def create_imputation_instance(arguments,imputation_web_session_log):     
     protein_id = arguments['proteinid']
@@ -316,6 +333,7 @@ def create_imputation_instance(arguments,imputation_web_session_log):
     data_params['cur_gradient_key'] = 'no_gradient'
 
     data_params['onehot_features'] = []
+    data_params['cv_fitonce'] = 0
         
     #alm_ml class parameters
     ml_params = {}
@@ -444,3 +462,46 @@ def create_email_notification_msg(session_id):
           "Check Log at http://impute.varianteffect.org/log/" + session_id + ".log\n" + \
           "Regards,\nRoth Lab"  
     return(msg)
+
+def create_uniprotid_map(uniprot_id):
+    uniprot_out_file = project_path + 'output/!' + uniprot_id + '.out'
+    feature_file = humandb_path + 'dms/features/'+ uniprot_id + '_features.csv'
+    
+    if (not os.path.isfile(uniprot_out_file)) and os.path.isfile(feature_file):
+        uniprot_out = open(uniprot_out_file,'w')
+        
+        dms_gene_csv_df = pd.read_csv(humandb_path + 'dms/features/'+ uniprot_id + '_features.csv')
+         
+        if str(dms_gene_csv_df['polyphen_score'].dtype) != 'float64':
+            dms_gene_csv_df.loc[dms_gene_csv_df['polyphen_score'].str.contains("\?").fillna(False),'polyphen_score'] = np.nan
+            dms_gene_csv_df['polyphen_score'] = dms_gene_csv_df['polyphen_score'].astype(float)
+             
+        dms_gene_csv_df['aa_pos_index'] = dms_gene_csv_df['aa_pos']
+        dms_gene_csv_df['ss_end_pos_index'] = dms_gene_csv_df['ss_end_pos']
+        dms_gene_csv_df['pfam_end_pos_index'] = dms_gene_csv_df['pfam_end_pos']
+        #      ass colorcode
+        [lst_max_colors_asa, lst_min_colors_asa] = alm_fun.create_color_gradients(1, 0, 0, '#3155C6', '#FFFFFF', '#FFFFFF', 10, 10)  
+        dms_gene_csv_df['asa_mean_normalized'] = (dms_gene_csv_df['asa_mean'] - np.nanmin(dms_gene_csv_df['asa_mean'])) / (np.nanmax(dms_gene_csv_df['asa_mean']) - np.nanmin(dms_gene_csv_df['asa_mean']))
+        dms_gene_csv_df['asa_colorcode'] = dms_gene_csv_df['asa_mean_normalized'].apply(lambda x: alm_fun.get_colorcode(x, 1, 0, 0, 10, 10, lst_max_colors_asa, lst_min_colors_asa))
+         
+        if  'sift_score' in dms_gene_csv_df.columns:  
+        #      sift colorcode
+            [lst_max_colors_sift,lst_min_colors_sift] = alm_fun.create_color_gradients(1, 0, 0.05,'#C6172B','#FFFFFF','#3155C6',10,10)
+            [lst_max_colors_sift, lst_min_colors_sift] = alm_fun.create_color_gradients(1, 0, 0, '#FFFFFF', '#3155C6', '#3155C6', 10, 10)
+            dms_gene_csv_df['sift_colorcode'] = dms_gene_csv_df['sift_score'].apply(lambda x: alm_fun.get_colorcode(x, 1, 0, 0, 10, 10, lst_max_colors_sift, lst_min_colors_sift))
+               
+        [lst_max_colors_polyphen, lst_min_colors_polyphen] = alm_fun.create_color_gradients(1, 0, 0, '#3155C6', '#FFFFFF', '#FFFFFF', 10, 10)
+        dms_gene_csv_df['polyphen_colorcode'] = dms_gene_csv_df['polyphen_score'].apply(lambda x: alm_fun.get_colorcode(x, 1, 0, 0, 10, 10, lst_max_colors_polyphen, lst_min_colors_polyphen))
+           
+        [lst_max_colors_gnomad, lst_min_colors_gnomad] = alm_fun.create_color_gradients(10, 0.3, 0.3, '#3155C6', '#FFFFFF', '#FFFFFF', 10, 10)            
+        dms_gene_csv_df['gnomad_af_log10'] = 0 - np.log10(dms_gene_csv_df['gnomad_af'])
+        dms_gene_csv_df['gnomad_colorcode'] = dms_gene_csv_df['gnomad_af_log10'].apply(lambda x: alm_fun.get_colorcode(x, 10, 0.3, 0.3, 10, 10, lst_max_colors_gnomad, lst_min_colors_gnomad))
+           
+        [lst_max_colors_provean, lst_min_colors_provean] = alm_fun.create_color_gradients(4, -13, -13, '#FFFFFF', '#3155C6', '#3155C6', 10, 10)
+        dms_gene_csv_df['provean_colorcode'] = dms_gene_csv_df['provean_score'].apply(lambda x: alm_fun.get_colorcode(x, 4, -13, -13, 10, 10, lst_max_colors_provean, lst_min_colors_provean))
+            
+        out_file =  dms_gene_csv_df.to_json(orient='records')
+        uniprot_out.write(out_file)
+        uniprot_out.close()
+        
+        

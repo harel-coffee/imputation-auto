@@ -93,26 +93,36 @@ class alm_ml:
                         cur_params_dict[key_names[k]] = key_types[k](cur_params_instance[k])
                 alm_estimator.estimator.set_params(**cur_params_dict)
  
-                [validation_y_predicted, validation_y_truth, cv_feature_importance, train_cv_result, validation_cv_result, train_cv_score, validation_cv_score] = self.run_cv_prediction(alm_estimator, alm_dataset)
-                validation_score = validation_cv_score['mean']
-                train_score = train_cv_score['mean']
+                r = self.run_cv_prediction(alm_estimator, alm_dataset)
+                validation_cv_score = r['validation_cv_score']
+                validation_cv_result = r['validation_cv_result']
+                train_cv_score = r['train_cv_score']
  
                 if j == 0:
-                    all_validation_score = validation_score
-                    all_train_score = train_score
-                    gs_opt_score = validation_score
+                    all_validation_cv_score = validation_cv_score
+                    all_train_score = train_cv_score
+                    gs_opt_cv_score = validation_cv_score
+                    gs_opt_result = validation_cv_result
                     gs_opt_params = cur_params_dict 
                 else:        
-                    all_validation_score = np.vstack([all_validation_score, validation_score])
-                    all_train_score = np.vstack([all_train_score, train_score])
-                    if (alm_estimator.score_direction == 0 and float(validation_score) < float(gs_opt_score)) or (alm_estimator.score_direction == 1 and float(validation_score) > float(gs_opt_score)):
-                        gs_opt_score = validation_score
+                    all_validation_cv_score = np.vstack([all_validation_cv_score, validation_cv_score])
+                    all_train_score = np.vstack([all_train_score, train_cv_score])
+                    if (alm_estimator.score_direction == 0 and float(validation_cv_score) < float(gs_opt_cv_score)) or (alm_estimator.score_direction == 1 and float(validation_cv_score) > float(gs_opt_cv_score)):
+                        gs_opt_cv_score = validation_cv_score
+                        gs_opt_cv_result = validation_cv_result
                         gs_opt_params = cur_params_dict                 
-                msg = "[grid search] current parameters: " + str(cur_params_dict) + " validation_score: " + str(validation_score[0]) + " training_score : " + str(train_score[0])
-                show_msg(self.log, self.verbose, msg) 
+                msg = "[grid search] current parameters: " + str(cur_params_dict) + " validation_cv_score: " + str(validation_cv_score) + " training_score : " + str(train_cv_score)
+                alm_fun.show_msg(self.log, self.verbose, msg) 
             alm_estimator.estimator.set_params(**gs_opt_params)   
-            gs_results = pd.DataFrame(np.transpose(np.vstack([params, np.transpose(all_validation_score), np.transpose(all_train_score)])), columns=key_names + ['validation_' + alm_estimator.score_name, 'train_' + alm_estimator.score_name ]).drop('dummy', axis=1)        
-            return ([gs_opt_params, gs_opt_score, gs_results])
+            gs_results = pd.DataFrame(np.transpose(np.vstack([params, np.transpose(all_validation_cv_score), np.transpose(all_train_score)])), columns=key_names + ['validation_' + alm_estimator.score_name, 'train_' + alm_estimator.score_name ]).drop('dummy', axis=1)
+            
+            result_dict = {}
+            result_dict['gs_results'] = gs_results
+            result_dict['gs_opt_params'] = gs_opt_params
+            result_dict['gs_opt_cv_result'] = gs_opt_cv_result
+            result_dict['gs_opt_cv_score'] = gs_opt_cv_score
+     
+            return (result_dict)
 
     def run_test_prediction(self, alm_estimator,alm_dataset,features=None):        
         if features == None:
@@ -144,7 +154,7 @@ class alm_ml:
                 cur_test_df_bs = cur_test_df.loc[bs_idx[i, :], :]       
                 cur_test_df_bs.to_csv('/Users/joewu/test_bs.csv')
                  
-                r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df_bs, alm_dataset.extra_train_data_df)
+                r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df_bs, alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data)
         
                 if 'test_bs_results' not in locals():
                     test_bs_results = r['test_score_df']   
@@ -163,7 +173,7 @@ class alm_ml:
             test_y_predicted = r['test_y_predicted']
             feature_importance = r['feature_importance']            
         else:             
-            r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df, alm_dataset.extra_train_data_df)            
+            r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df ,alm_dataset.extra_train_data_df, alm_dataset.use_extra_train_data)            
             test_y_predicted = r['test_y_predicted']
             feature_importance = r['feature_importance']   
             
@@ -195,7 +205,7 @@ class alm_ml:
             cur_train_df = alm_dataset.train_data_index_df.loc[alm_dataset.train_data_for_target_df[alm_dataset.cur_gradient_key],:]
             cur_target_df = alm_dataset.target_data_index_df.loc[alm_dataset.target_data_for_target_df[alm_dataset.cur_gradient_key],:]
              
-        r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_target_df, alm_dataset.extra_train_data_df)            
+        r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_target_df, alm_dataset.extra_train_data_df, alm_dataset.use_extra_train_data)  
         alm_dataset.predicted_target_df = r['predicted_df']    
         target_results = r['test_score_df']
         target_result_mean = round(target_results.mean(axis=0), alm_estimator.round_digits)
@@ -226,8 +236,12 @@ class alm_ml:
             else:
                 cur_train_cv_df = alm_dataset.train_data_index_df.loc[alm_dataset.train_cv_splits_df[alm_dataset.cur_test_split_fold][i][alm_dataset.cur_gradient_key],:]
                 cur_validation_cv_df = alm_dataset.validation_data_index_df.loc[alm_dataset.validation_cv_splits_df[alm_dataset.cur_test_split_fold][i][alm_dataset.cur_gradient_key],:]
-                
-            r = alm_estimator.run(features, alm_dataset.dependent_variable , alm_estimator.ml_type, cur_train_cv_df, cur_validation_cv_df)
+            
+            
+            if ((alm_dataset.cv_fitonce == 1) & (i != 0 )):
+                r = alm_estimator.run(features, alm_dataset.dependent_variable , alm_estimator.ml_type, cur_train_cv_df, cur_validation_cv_df,alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data,nofit =1)            
+            else:    
+                r = alm_estimator.run(features, alm_dataset.dependent_variable , alm_estimator.ml_type, cur_train_cv_df, cur_validation_cv_df,alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data)
 
             train_y_splits_predicted = r['train_y_predicted']
             train_score_df = r['train_score_df']
@@ -463,7 +477,7 @@ class alm_ml:
              
         self.feature_eval.to_csv(self.path + self.name + extra_name + "_feature_evaluation.csv")  
         msg = "[feature_evaluation] Saving mutual information and linear relationship between each feature and test to " + self.path + self.name + "_feature_evaluation.csv"
-        show_msg(self.log, self.verbose, msg)
+        alm_fun.show_msg(self.log, self.verbose, msg)
         if feature_plot == 1:
             # plot data distibution for each feature
             fig = plt.figure(figsize=(14, 10))
@@ -556,7 +570,7 @@ class alm_ml:
             score_interaction_forward.loc[i, i] = cur_score_forward
             score_interaction_backward.loc[i, i] = cur_score_backward
             msg = "[feature interaction] Single feature: (" + interaction_features_name[i] + ")," + " forward score: " + str(cur_score_forward) + " backward score: " + str(cur_score_backward)
-            show_msg(self.log, self.verbose, msg)      
+            alm_fun.show_msg(self.log, self.verbose, msg)      
           
         for i in double_features_idx: 
             i_list = list(i)   
@@ -583,7 +597,7 @@ class alm_ml:
             epsilon_interaction_forward.loc[i[::-1]] = epsilon_interaction_forward.loc[i]
             epsilon_interaction_backward.loc[i[::-1]] = epsilon_interaction_backward.loc[i]
             msg = "[feature interaction] Double features: (" + str(interaction_features_name[i_list[0]]) + " - " + str(interaction_features_name[i_list[1]]) + ")," + " forward score: " + str(cur_score_forward) + " backward score: " + str(cur_score_backward)
-            show_msg(self.log, self.verbose, msg)                    
+            alm_fun.show_msg(self.log, self.verbose, msg)                    
          
         score_interaction_forward.columns = interaction_features_name
         score_interaction_forward.index = interaction_features_name
@@ -644,11 +658,11 @@ class alm_ml:
                 bs_df.loc[bs_df.shape[0]] = [feature, "+", cur_score, ""]      
                 start_features.append(feature)    
             msg = "[feature selection] Backward selection: Check feature: (" + feature + ")," + " score: " + str(cur_score)
-            show_msg(self.log, self.verbose, msg)                             
+            alm_fun.show_msg(self.log, self.verbose, msg)                             
         if prev_score == start_score:
             return bs_df
         msg = "[feature selection] Backward selection: Remove feature: " + best_feature + ")," + " score: " + str(start_score)
-        show_msg(self.log, self.verbose, msg)  
+        alm_fun.show_msg(self.log, self.verbose, msg)  
         bs_df.loc[bs_df.shape[0]] = [best_feature, "+", start_score, ""]        
         start_features.remove(best_feature)
         self.bs(alm_estimator, alm_dataset, start_features, start_score, bs_df)
@@ -669,11 +683,11 @@ class alm_ml:
              
             start_features.remove(feature)
             # msg =  "[feature selection] Forward selection: Check feature: (" + feature + ")," + " score: " + str(cur_score)
-            # show_msg(self.log,self.verbose,msg)                         
+            # alm_fun.show_msg(self.log,self.verbose,msg)                         
         if prev_score == start_score:
             return fs_df
         msg = "[feature selection] Forward selection: Add feature: (" + best_feature + ")," + " score: " + str(start_score)
-        show_msg(self.log, self.verbose, msg)  
+        alm_fun.show_msg(self.log, self.verbose, msg)  
         fs_df.loc[fs_df.shape[0]] = [best_feature, "+", start_score, ""]        
         start_features.append(best_feature)
         left_features.remove(best_feature)  
@@ -685,10 +699,11 @@ class alm_ml:
         k -= 1                      
         if start_score == inf:  # this is first time run 
             if len(start_features) != 0:
-                cur_score = float(self.run_cv_prediction(alm_estimator, alm_dataset, 'local_search', start_features, plot=False)[-1]['mean'])
+                alm_dataset.train_features = start_features
+                cur_score = self.run_cv_prediction(alm_estimator, alm_dataset)['validation_cv_score']
                 msg = "[feature selection] Local search: start from feature (" + str(start_features) + "), score: " + str(cur_score)
                 start_score = cur_score 
-                show_msg(self.log, self.verbose, msg)
+                alm_fun.show_msg(self.log, self.verbose, msg)
             else:
                 if (alm_estimator.score_direction == 0):            
                     start_score = inf
@@ -705,7 +720,8 @@ class alm_ml:
             sign = "remove"
             start_features.remove(selected_feature)
         if len(start_features) != 0:
-            cur_score = float(self.run_cv_prediction(alm_estimator, alm_dataset, 'local_search', start_features, plot=False)[-1]['mean'])          
+            alm_dataset.train_features = start_features
+            cur_score = self.run_cv_prediction(alm_estimator, alm_dataset)['validation_cv_score']      
             if (alm_estimator.score_direction == 0):            
                 delta_score = start_score - cur_score
             if (alm_estimator.score_direction == 1):            
@@ -720,14 +736,14 @@ class alm_ml:
                 self.fs_results.loc[self.fs_results.shape[0]] = [T, k, sign, selected_feature, start_features.copy(), cur_score, delta_score, prob, "Yes", successive_rejection_count]
 #                 self.fs_results = self.fs_results.append(pd.Series([T,k,sign,selected_feature,start_features,cur_score,delta_score,prob,"Yes",successive_rejection_count],index = self.fs_results.columns),ignore_index = True)
                 msg = "[feature selection] Local search: Accept " + sign + " feature (" + selected_feature + ") with probability " + str(prob) + ", score: " + str(cur_score) + ", delta_score: " + str(delta_score) + ", T: " + str(T) + ", k: " + str(k)
-                show_msg(self.log, self.verbose, msg)       
+                alm_fun.show_msg(self.log, self.verbose, msg)       
                 start_score = cur_score        
             else:
                 successive_rejection_count += 1 
                 self.fs_results.loc[self.fs_results.shape[0]] = [T, k, sign, selected_feature, start_features.copy(), cur_score, delta_score, prob, "No", successive_rejection_count]   
 #                 self.fs_results = self.fs_results.append(pd.Series([T,k,sign,selected_feature,start_features,cur_score,delta_score,prob,"No",successive_rejection_count],index = self.fs_results.columns),ignore_index = True)
                 msg = "[feature selection] Local search: Reject " + sign + " feature (" + selected_feature + ") with probability " + str(prob) + ", score: " + str(cur_score) + ", delta_score: " + str(delta_score) + ", T: " + str(T) + ", k: " + str(k)
-                show_msg(self.log, self.verbose, msg)  
+                alm_fun.show_msg(self.log, self.verbose, msg)  
                 if all_feature_states[selected_idx] == 0:
                    start_features.remove(selected_feature)
                 else:

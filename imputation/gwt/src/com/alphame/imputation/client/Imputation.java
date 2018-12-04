@@ -65,7 +65,7 @@ public class Imputation implements EntryPoint {
 	  
 	  public String Jochen_Download_URL = SERVER_URL + "downloads/Weile2017.zip";
 	  public String template_Download_URL = SERVER_URL + "downloads/imputation_template.zip";
-	  public String example_Download_URL = SERVER_URL + "downloads/imputation_example.zip";
+	  public String example_Download_URL = SERVER_URL + "downloads/imputation_examples.zip";
 	  public String uniprot_list_Download_URL = SERVER_URL + "downloads/supported_uniprot_ids.txt";
 	  public String help_Download_URL = SERVER_URL + "downloads/imputation_help.pdf";
 	  public int jsonRequestId = 0;
@@ -581,10 +581,19 @@ public class Imputation implements EntryPoint {
 		  lsb_viewoptions.addChangeHandler(new ChangeHandler() {
 			  public void onChange(ChangeEvent event) {
 	              show_processing_img();
-				  refresh_imputation_table(lsb_viewoptions.getSelectedItemText());
+	              view_option_async(lsb_viewoptions.getSelectedItemText());
+//				  refresh_imputation_table(lsb_viewoptions.getSelectedItemText());
 		    }
 		  });
 
+//		  lsb_viewoptions.addClickHandler(new ClickHandler() {
+//			    @Override
+//			    public void onClick(ClickEvent event) {
+//		              show_processing_img();
+//					  refresh_imputation_table(lsb_viewoptions.getSelectedItemText());
+//			    } 
+//		  });
+		  
 		    
 		  Header2.addClickHandler(new ClickHandler() {
 			    @Override
@@ -1146,6 +1155,14 @@ public class Imputation implements EntryPoint {
 //	      Window.alert(url);
 	      getJson(jsonRequestId++, url, 5,this);  
 	  }
+	  
+	  private void view_option_async(String view_option) {
+    	  String url;
+    	  url= JSON_URL;
+	      url = URL.encode(url)+ "queryflag=6;view_option=" + view_option + ";sessionid=" + session_id +";callback=";
+//	      Window.alert(url);
+	      getJson(jsonRequestId++, url, 6,this);  
+	  }
 
 	  public native static void getJson(int requestId, String url, int RequestFlag, Imputation handler) /*-{
 	   var callback = "callback" + requestId;
@@ -1197,14 +1214,15 @@ public class Imputation implements EntryPoint {
 		    }
 		    //	Window.alert("queryflag:" + RequestFlag + ",Json Response Back!");
 		    switch (RequestFlag) {
-		    case -1:{
-				 if (asArrayOfSingleLineData (jso).get(0).get_content() != "OK") {
-					lbl_error.setText(asArrayOfSingleLineData (jso).get(0).get_content());
-//				    ErrorEmailPanel.setVisible(true);
-					ErrorPopupPanel.center();
-				}	
-				break;
-		    }
+
+			    case -1:{
+					 if (asArrayOfSingleLineData (jso).get(0).get_content() != "OK") {
+						lbl_error.setText(asArrayOfSingleLineData (jso).get(0).get_content());
+	//				    ErrorEmailPanel.setVisible(true);
+						ErrorPopupPanel.center();
+					}	
+					break;
+			    }
 		    
 		    	case 1:{
 //		    		 Window.alert(asArrayOfSingleLineData (jso).get(0).get_content());
@@ -1257,12 +1275,14 @@ public class Imputation implements EntryPoint {
 //		    		String pubemed_link = asArrayOfSingleLineData (jso).get(0).get_content();
 //		    		Window.open(pubemed_link, "_blank", null);
 	    			break;
+		    	}
+		    	case 6:{ 
+					 if (asArrayOfSingleLineData (jso).get(0).get_content() != "Error") {
+						 refresh_imputation_table(asArrayOfSingleLineData (jso).get(0).get_content());	 
+					 }
+		    		break;
 	    		}
-		    	
-		    	
-		    	
 
-		    	
 		    }
 	    	intRequest = 0;
 	  }
@@ -1578,7 +1598,7 @@ public class Imputation implements EntryPoint {
 	  btn_download_figure.setEnabled(true);
 //	  Window.alert(session_id);
 	  if (session_id.substring(0, 1) == "*") {
-		  btn_pubmed_link.setEnabled(true);}
+		  btn_pubmed_link.setEnabled(false);}
 	  else {
 		  btn_pubmed_link.setEnabled(false);}
 	  }

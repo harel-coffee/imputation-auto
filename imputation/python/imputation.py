@@ -36,7 +36,7 @@ from datetime import datetime
 from statistics import mode
 
 python_path = '/usr/local/projects/ml/python/'
-project_path = '/usr/local/projects/imputation/project/'
+project_path = '/usr/local/projects/imputation/gwt/www/'
 sys.path.append(python_path)
 import alm_project
 import alm_fun
@@ -84,10 +84,9 @@ class imputation:
                 [cur_train_dms_df, cur_target_dms_df, cur_extra_train_dms_df] = self.data_preprocess(self.dms_landscape_files[i], self.dms_fasta_files[i], self.dms_protein_ids[i], self.data_names[i], self.raw_processed[i], self.normalized_flags[i], self.proper_num_replicates[i], self.reverse_flags[i], self.floor_flags[i],self.quality_cutoffs[i])                
                 self.project_params['data_names'].append(self.data_names[i])
                 self.project_params['target_data'].append(cur_target_dms_df)
-                self.project_params['test_data'].append(pd.DataFrame(columns=cur_train_dms_df.columns))
+                self.project_params['test_data'].append(pd.DataFrame())
                 self.project_params['train_data'].append(cur_train_dms_df)                
-                self.project_params['extra_train_data'].append(cur_extra_train_dms_df)  
-                self.project_params['extra_train_data'].append(cur_extra_train_dms_df)
+                self.project_params['extra_train_data'].append(pd.DataFrame())  
                 self.project_params['use_extra_train_data'].append(0)
                 self.project_params['input_data_type'].append('dataframe')             
                 # create combined dms 
@@ -324,8 +323,6 @@ class imputation:
         dms_gene_fitness = dms_gene_raw_fitness.copy()
         return(dms_gene_fitness)
         
-
-
     def data_preprocess(self, dms_landscape_file, dms_fasta_file, dms_protein_id, data_name, raw_processed, normalized, proper_num_replicates, reverse_flag, floor_flag, quality_cutoff):
         
         def aa_encode_notnull(x):
@@ -795,8 +792,8 @@ class imputation:
         ####*************************************************************************************************************************************************************
         # step4: run imputation ML 
         ####*************************************************************************************************************************************************************        
-        self.project.modes = ['prediction']
-        fitness_predicted = self.project.run(refresh_data = refresh_data) ['prediction'][data_name]    
+        self.project.modes = ['target_prediction']
+        fitness_predicted = self.project.run(refresh_data = refresh_data) ['target_prediction'][data_name]    
         dms_gene_df = self.project.data[data_name].target_data_original_df.copy()
         dms_gene_df['fitness_imputed'] = np.nan
         dms_gene_df['knn_count'] = np.nan
@@ -863,7 +860,7 @@ class imputation:
         ####*************************************************************************************************************************************************************
         # step7: save files and draw figures
         ####*************************************************************************************************************************************************************
-        dms_gene_csv_df = dms_gene_df[['aa_ref', 'aa_pos', 'aa_pos_index', 'aa_alt', 'annotation', 'aa_psipred','ss_end_pos','ss_end_pos_index','hmm_id','pfam_end_pos','pfam_end_pos_index','quality_score', 'num_replicates', 'fitness_org', 'fitness_sd_org', 'fitness_reverse', 'fitness_sd_reverse', 'fitness', 'fitness_sd', 'fitness_se', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'knn_se', 'knn_count', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'funsum_fitness_mean', 'blosum62', 'gnomad_af', 'asa_mean', 'pseudo_count', 'fitness_input', 'fitness_input_sd','fitness_input_filtered', 'fitness_input_filtered_sd','syn_filtered','stop_filtered']]  
+        dms_gene_csv_df = dms_gene_df[['p_vid','aa_ref', 'aa_pos', 'aa_pos_index', 'aa_alt', 'annotation', 'aa_psipred','ss_end_pos','ss_end_pos_index','hmm_id','pfam_end_pos','pfam_end_pos_index','quality_score', 'num_replicates', 'fitness_org', 'fitness_sd_org', 'fitness_reverse', 'fitness_sd_reverse', 'fitness', 'fitness_sd', 'fitness_se', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'knn_se', 'knn_count', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'funsum_fitness_mean', 'blosum62', 'gnomad_af', 'asa_mean', 'pseudo_count', 'fitness_input', 'fitness_input_sd','fitness_input_filtered', 'fitness_input_filtered_sd','syn_filtered','stop_filtered']]  
 
         # fitness colorcode     
         if self.remediation[cur_data_idx] == 1:
@@ -936,17 +933,19 @@ class imputation:
         #*************************************************************************
         #imputation result for downloading
         #*************************************************************************
-        dms_imputation_csv_df = dms_gene_csv_df[['aa_ref', 'aa_pos', 'aa_alt', 'annotation', 'quality_score', 'num_replicates', 'pseudo_count', 'fitness_input', 'fitness_input_sd', 'fitness_org', 'fitness_sd_org', 'fitness', 'fitness_sd', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'gnomad_af', 'asa_mean', 'aa_psipred', 'ss_end_pos', 'hmm_id', 'pfam_end_pos']]            
+        dms_imputation_csv_df = dms_gene_csv_df[['p_vid','aa_ref', 'aa_pos', 'aa_alt', 'annotation', 'quality_score', 'num_replicates', 'pseudo_count', 'fitness_input', 'fitness_input_sd', 'fitness_org', 'fitness_sd_org', 'fitness', 'fitness_sd', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'gnomad_af', 'asa_mean', 'aa_psipred', 'ss_end_pos', 'hmm_id', 'pfam_end_pos']]            
         dms_imputation_csv_df.to_csv(self.project_path + 'output/' + data_name + '_imputation.csv')
         
-                #*************************************************************************
+        #*************************************************************************
+        #*************************************************************************
+        #*************************************************************************
         #remove columns that has no oringial fitness values 
         #*************************************************************************
-        
-#         available_pos = dms_gene_csv_df.loc[dms_gene_csv_df['fitness_org'].notnull(),'aa_pos'].unique()
-#         dms_gene_csv_df = dms_gene_csv_df.loc[dms_gene_csv_df['aa_pos'].isin(available_pos),:]
-#         
-#         
+        #*************************************************************************
+        #*************************************************************************        
+        available_pos = dms_gene_csv_df.loc[dms_gene_csv_df['fitness_org'].notnull(),'aa_pos'].unique()
+        dms_gene_csv_df = dms_gene_csv_df.loc[dms_gene_csv_df['aa_pos'].isin(available_pos),:]
+      
         #*************************************************************************
         #imputation plot
         #*************************************************************************
@@ -1294,7 +1293,7 @@ class imputation:
                         se = landscape_se.loc[y_aa, x_pos]
                         se_lines.append(((x + (1 - se) / 2, y + (1 - se) / 2), (x + (1 + se) / 2, y + (1 + se) / 2)))  
                 pass
-    #             ax_3.add_collection(collections.LineCollection(se_lines, linewidth=1, color='black'))  
+                ax_3.add_collection(collections.LineCollection(se_lines, linewidth=1, color='black'))  
                 
                 # legends for the aa       
                 x = -40   

@@ -52,74 +52,11 @@ import alm_fun
     
 class alm_data:
 
-    # the properties of the alphame_ml class
-    # 1)name: the name of the learning class for different projects
-    # 2)path: the path for save log and read training and test data
-    # 2)train_file: the file name of  the training data set
-    # 3)test_file: the file name of the test data set (with dependent variable)
-    # 5)dependent_variable: the label for classification or the value for regression 
-    # 6)feature_update_fun: a function to update the feature value of training and test data set depending on the different training samples
-    # 7)quality_feature: feature that contains data quality information
-    # 8)quality_feature_direction: 1: bigger value higher data quality -1:smaller value higher data quality
-    # 9)onhot_features: feature sets that need to encode with onehot encoding 
-    # 10)percent_min_feature: filter out the feature that has less than "percent_min_feature" percent data available
-    # 11)initial_feature: filter out the features that not in initial_features set
-    # 12)feature_engineer: the function updates the value of engineered feature, usually the value depends on the current training data set
-    # 12)cv_split_method: [0] k_folds [1]Stratified k_folds
-    # 13)cv_split_folds: number of folds for cross-validation
     def __init__(self, data_init_params):
         
         for key in data_init_params:
             setattr(self, key, data_init_params[key])
         alm_fun.show_msg (self.log,self.verbose,'Class: [alm_data] [__init__] ' + self.name + ' ......done @' + str(datetime.now()))
-#         self.name = name
-#         self.path = path
-#         self.log = open(self.path + 'log/alm_data[' + self.name + '].log', 'w')  
-#         self.verbose = verbose
-#         self.ml_type = ml_type
-#         self.independent_testset = independent_testset
-#         self.cv_split_method = cv_split_method  
-#         self.test_split_method = test_split_method
-#         self.test_split_folds = test_split_folds
-#         self.test_split_ratio = test_split_ratio
-#         self.cv_split_folds = cv_split_folds
-#         self.validation_from_testset = validation_from_testset
-#         self.percent_min_feature = float(percent_min_feature)
-#         
-#         self.use_extra_train_data = use_extra_train_data        
-#         self.train_data_original_df = train_df
-#         self.test_data_original_df = test_df    
-#         self.target_data_original_df = target_df
-#           
-#         if self.use_extra_train_data != 0:
-#             self.extra_train_data_original_df = extra_train_df  
-#         else:
-#             self.extra_train_data_original_df = None
-#  
-#         self.dependent_variable = dependent_variable
-#         self.filter_test = filter_test
-#         self.filter_train = filter_train
-#         self.filter_target = filter_target
-#         self.filter_validation = filter_validation
-#         self.prediction_bootstrapping = prediction_bootstrapping
-#         self.bootstrapping_num = bootstrapping_num
-#           
-#         self.feature_engineer = feature_engineer
-#         self.data_slice = data_slice
-#         self.cv_split = cv_split
-#         self.gradient_reshape = gradient_reshape
-# 
-#         self.onehot_features = onehot_features
-#         self.dict_onehot_features = {}
-#         self.initial_features = initial_features
-#         self.train_features = train_features
-#         self.compare_features = compare_features  
-#         self.interaction_features = interaction_features
-#         self.interaction_features_name = interaction_features_name              
-#         self.feature_filtered = []
-#         if self.verbose:
-#             print ('Class: [alm_data] Fun: [__init__] ' + self.name + ' .... done @' + str(datetime.now()))
-
  
     def refresh_data(self): 
 
@@ -157,12 +94,6 @@ class alm_data:
                 alm_fun.show_msg(self.log, self.verbose, msg)    
             
             if self.save_to_disk == 1:
-#                 self.train_data_df.to_csv(self.path + 'output/' + self.name + '_train.csv')               
-#                 self.target_data_df.to_csv(self.path + 'output/' + self.name + '_target.csv')
-#                 self.test_data_df.to_csv(self.path + 'output/' + self.name + '_test.csv')
-#                                          
-#                 if self.extra_train_data_df is not None:                
-#                     self.extra_train_data_df.to_csv(self.path + self.name + '_extra_train.csv')   
                     
                 self.dict_savedata = {}
                 self.dict_savedata['extra_train_data_df'] = self.extra_train_data_df
@@ -277,92 +208,101 @@ class alm_data:
         
         # loading original test data, if there is no dependent variable than add one, otherwise remove the records without label
         self.test_data_working_df = self.test_data_original_df.copy()
-        self.test_data_working_df['random_feature'] = np.random.uniform(0, 1, self.test_data_working_df.shape[0])
-        self.test_data_working_df = self.test_data_working_df.loc[self.test_data_working_df[self.dependent_variable].notnull(), :]
+        if self.test_data_original_df.shape[0] != 0 :
+            self.test_data_working_df['random_feature'] = np.random.uniform(0, 1, self.test_data_working_df.shape[0])
+            self.test_data_working_df = self.test_data_working_df.loc[self.test_data_working_df[self.dependent_variable].notnull(), :]
 
-        # loading original target data 
+        # loading original target data
         self.target_data_working_df = self.target_data_original_df.copy()
-        self.target_data_working_df['random_feature'] = np.random.uniform(0, 1, self.target_data_working_df.shape[0])
-
-        if self.use_extra_train_data != 0:
-            self.extra_train_data_working_df = self.extra_train_data_original_df.copy()
+        if self.target_data_original_df.shape[0] != 0 :
+            self.target_data_working_df['random_feature'] = np.random.uniform(0, 1, self.target_data_working_df.shape[0])
+#             self.target_data_working_df = self.target_data_working_df.loc[self.target_data_working_df[self.dependent_variable].notnull(), :]
+        
+        self.extra_train_data_working_df = self.extra_train_data_original_df.copy()
+        if self.extra_train_data_original_df.shape[0] != 0:
+            self.extra_train_data_working_df['random_feature'] = np.random.uniform(0, 1, self.extra_train_data_working_df.shape[0])
             self.extra_train_data_working_df = self.extra_train_data_working_df.loc[self.extra_train_data_working_df[self.dependent_variable].notnull(), :]
+
          
-        # first need to take care onehot_features
-        if len(self.onehot_features) != 0:
-            # need to concatenate training, test, extra_training dataset to handle onehot features
-            self.train_data_working_df['temp_dtype'] = 'TR'
-            self.test_data_working_df['temp_dtype'] = 'TE'
-            if self.use_extra_train_data != 0:
-                self.extra_train_data_working_df['temp_dtype'] = 'ETR'
-             
-            if self.use_extra_train_data != 0:
-                self.data_working_df = pd.concat([self.train_data_working_df, self.test_data_working_df, self.extra_train_data_working_df], axis=0)
-            else:
-                self.data_working_df = pd.concat([self.train_data_working_df, self.test_data_working_df], axis=0)
-                 
-            self.data_working_df[self.onehot_features] = self.data_working_df[self.onehot_features].astype(str) 
-            self.data_working_df = pd.get_dummies(self.data_working_df, columns=self.onehot_features, prefix_sep='~',)   
-             
-            self.train_data_working_df = self.data_working_df.loc[self.data_working_df['temp_dtype'] == 'TR']
-            self.test_data_working_df = self.data_working_df.loc[self.data_working_df['temp_dtype'] == 'TE']
-            if self.use_extra_train_data != 0:
-                self.extra_train_data_working_df = self.data_working_df.loc[self.data_working_df['temp_dtype'] == 'ETR']             
-     
-            # use train original data set fill the onehot feature dictionary
-            for onehot_feature in self.onehot_features:
-                r = re.compile(onehot_feature + '~')
-                self.dict_onehot_features[onehot_feature] = list(filter(r.match, self.train_data_working_df.columns))
-             
-            # reconstruct the initial_features, train_features,compare_fetures,interaction features
-            for onehot_feature in self.onehot_features:
-                if onehot_feature in self.initial_features:
-                    self.initial_features.remove(onehot_feature)
-                    self.initial_features += self.dict_onehot_features[onehot_feature]
-                if onehot_feature in self.train_features: 
-                    self.train_features.remove(onehot_feature)
-                    self.train_features += self.dict_onehot_features[onehot_feature]
-                if onehot_feature in self.compare_features:    
-                    self.compare_features.remove(onehot_feature)
-                    self.compare_features += self.dict_onehot_features[onehot_feature]
-                if onehot_feature in self.interaction_features:
-                    self.interaction_features.remove(onehot_feature)
-                    self.interaction_features += self.dict_onehot_features[onehot_feature]
+        #*****************************************************************************************
+#       # Take care onehot_features
+        #*****************************************************************************************
+#         if len(self.onehot_features) != 0:
+#             # need to concatenate training, test, extra_training dataset to handle onehot features
+#             self.train_data_working_df['temp_dtype'] = 'TR'
+#             self.test_data_working_df['temp_dtype'] = 'TE'
+#             if self.use_extra_train_data != 0:
+#                 self.extra_train_data_working_df['temp_dtype'] = 'ETR'
+#              
+#             if self.use_extra_train_data != 0:
+#                 self.data_working_df = pd.concat([self.train_data_working_df, self.test_data_working_df, self.extra_train_data_working_df], axis=0)
+#             else:
+#                 self.data_working_df = pd.concat([self.train_data_working_df, self.test_data_working_df], axis=0)
+#                  
+#             self.data_working_df[self.onehot_features] = self.data_working_df[self.onehot_features].astype(str) 
+#             self.data_working_df = pd.get_dummies(self.data_working_df, columns=self.onehot_features, prefix_sep='~',)   
+#              
+#             self.train_data_working_df = self.data_working_df.loc[self.data_working_df['temp_dtype'] == 'TR']
+#             self.test_data_working_df = self.data_working_df.loc[self.data_working_df['temp_dtype'] == 'TE']
+#             if self.use_extra_train_data != 0:
+#                 self.extra_train_data_working_df = self.data_working_df.loc[self.data_working_df['temp_dtype'] == 'ETR']             
+#      
+#             # use train original data set fill the onehot feature dictionary
+#             for onehot_feature in self.onehot_features:
+#                 r = re.compile(onehot_feature + '~')
+#                 self.dict_onehot_features[onehot_feature] = list(filter(r.match, self.train_data_working_df.columns))
+#              
+#             # reconstruct the initial_features, train_features,compare_fetures,interaction features
+#             for onehot_feature in self.onehot_features:
+#                 if onehot_feature in self.initial_features:
+#                     self.initial_features.remove(onehot_feature)
+#                     self.initial_features += self.dict_onehot_features[onehot_feature]
+#                 if onehot_feature in self.train_features: 
+#                     self.train_features.remove(onehot_feature)
+#                     self.train_features += self.dict_onehot_features[onehot_feature]
+#                 if onehot_feature in self.compare_features:    
+#                     self.compare_features.remove(onehot_feature)
+#                     self.compare_features += self.dict_onehot_features[onehot_feature]
+#                 if onehot_feature in self.interaction_features:
+#                     self.interaction_features.remove(onehot_feature)
+#                     self.interaction_features += self.dict_onehot_features[onehot_feature]
                    
 #         if len(self.initial_features) != 0:
 #             self.train_data_df = self.train_data_working_df[self.initial_features]
 #             self.test_data_df = self.test_data_working_df[self.initial_features] 
 #             self.target_data_df = self.target_data_working_df[self.initial_features]
 #         else:
+
         self.train_data_df = self.train_data_working_df.copy()
         self.test_data_df = self.test_data_working_df.copy()  
         self.target_data_df = self.target_data_working_df.copy()
+        self.extra_train_data_df = self.extra_train_data_working_df
                        
         self.n_features = self.train_data_df.shape[1] - 1
         self.feature_names = self.train_data_df.columns.get_values()
+        
         # it is possible that self.test_data_df , target_data_df has less columns than self.train_data_df because of the onehot encoding 
-        self.test_feature_diff = list(set(self.feature_names) - set(self.test_data_df.columns.get_values()))
-        for i in range(len(self.test_feature_diff)):
-            self.test_data_df[self.test_feature_diff[i]] = 0
-        self.target_feature_diff = list(set(self.feature_names) - set(self.target_data_df.columns.get_values()))
-        for i in range(len(self.target_feature_diff)):
-            self.target_data_df[self.target_feature_diff[i]] = 0    
+#         self.test_feature_diff = list(set(self.feature_names) - set(self.test_data_df.columns.get_values()))
+#         for i in range(len(self.test_feature_diff)):
+#             self.test_data_df[self.test_feature_diff[i]] = 0
+#         self.target_feature_diff = list(set(self.feature_names) - set(self.target_data_df.columns.get_values()))
+#         for i in range(len(self.target_feature_diff)):
+#             self.target_data_df[self.target_feature_diff[i]] = 0    
                      
         self.train_counts = self.train_data_df.shape[0]
         self.test_counts = self.test_data_df.shape[0]
         self.target_counts = self.target_data_df.shape[0]
          
         if self.use_extra_train_data != 0:
+            self.extra_train_data_df = self.extra_train_data_working_df.copy()
             self.extra_train_counts = self.extra_train_data_df.shape[0]
-            if len(self.initial_features) != 0:
-                self.extra_train_data_df = self.extra_train_data_working_df[self.initial_features]
-            else:
-                self.extra_train_data_df = self.extra_train_data_working_df.copy()                
-            if len(self.onehot_features) != 0:
-                self.extra_train_data_df[self.onehot_features] = self.extra_train_data_df[self.onehot_features].astype(basestring)   
-                self.extra_train_data_df = pd.get_dummies(self.extra_train_data_df)     
-        else:
-            self.extra_train_data_df = None
+#             if len(self.initial_features) != 0:
+#                 self.extra_train_data_df = self.extra_train_data_working_df[self.initial_features]
+#             else:
+#                 self.extra_train_data_df = self.extra_train_data_working_df.copy()                
+#             if len(self.onehot_features) != 0:
+#                 self.extra_train_data_df[self.onehot_features] = self.extra_train_data_df[self.onehot_features].astype(basestring)   
+#                 self.extra_train_data_df = pd.get_dummies(self.extra_train_data_df)     
         
         self.train_data_for_target_df = None
         self.train_cv_splits_df = None
@@ -535,7 +475,7 @@ class alm_data:
                         kf_list.append(list(kf.split(self.train_data_df))[0])
                 else:                
                     kf = ms.StratifiedKFold(n_splits=self.test_split_folds, shuffle=True)   
-                    kf_list = list(kf.split(self.train_data_df))
+                    kf_list = list(kf.split(self.train_data_df,self.train_data_df[self.dependent_variable]))
             # customized split   
             if self.test_split_method == 2 :
                 kf_list = self.test_split(self.train_data_df) 
@@ -569,10 +509,10 @@ class alm_data:
                         kf_folds = int(1/self.cv_split_ratio)
                         kf = ms.StratifiedKFold(n_splits=kf_folds, shuffle=True) 
                         kf_list = []
-                        kf_list.append(list(kf.split(cur_train_data_df))[0])
+                        kf_list.append(list(kf.split(cur_train_data_df,cur_train_data_df[self.dependent_variable]))[0])
                     else:    
                         kf = ms.StratifiedKFold(n_splits=self.cv_split_folds, shuffle=True)   
-                        kf_list = list(kf.split(cur_train_data_df))
+                        kf_list = list(kf.split(cur_train_data_df,cur_train_data_df[self.dependent_variable]))
                 # customized split   
                 if self.cv_split_method == 2 :
                     kf_list = self.cv_split(cur_train_data_df)  
@@ -590,12 +530,12 @@ class alm_data:
         
         #case2: training from one set, validation and test from another set (independent_testset and validation_from_testset parameters) 
         if self.independent_testset == 1:            
-            if self.validation_from_testset:
+#             if self.validation_from_testset:
                 #validation from testset will force the cv_split_folds = 1
-                self.cv_split_folds = 1
-            else:
+                #self.cv_split_folds = 1
+#             else:
                 #validation not from testset will force the test_split_folds = 1
-                 self.test_split_folds  = 1  
+#                 self.test_split_folds  = 1
                            
             self.train_splits_df = [{} for i in range(self.test_split_folds)]      
             self.test_splits_df = [{} for i in range(self.test_split_folds)]
@@ -603,35 +543,51 @@ class alm_data:
             self.validation_cv_splits_df = [[{} for i in range(self.cv_split_folds)] for j in range(self.test_split_folds)]
             
             #split testset to test_split_folds folds (validation - test)
-            if self.validation_from_testset: 
-                if self.test_split_folds == 1: #special case that validation set is the same as test set
+            if self.validation_from_testset:                 
+                if self.validation_equal_testset:
+                    self.test_split_folds = 1 #special case that validation set is the same as test set
                     kf_list = [(range(self.test_data_df.shape[0]),range(self.test_data_df.shape[0]))]
-                else:
-                    if self.test_split_method == 0 :   
-                        kf = ms.KFold(n_splits=self.test_split_folds, shuffle=True) 
-                        kf_list = list(kf.split(self.test_data_df))  
+                else:                
+                    if self.test_split_method == 0 :  
+                        if self.test_split_folds == 1:
+                            kf_folds = int(1/self.test_split_ratio)
+                            kf = ms.KFold(n_splits=kf_folds, shuffle=True) 
+                            kf_list = []
+                            kf_list.append(list(kf.split(self.test_data_df))[0])
+                        else:                                         
+                            kf = ms.KFold(n_splits=self.test_split_folds, shuffle=True) 
+                            kf_list = list(kf.split(self.test_data_df))  
                     # stratified split (keep prior)
-                    if self.test_split_method == 1 :   
-                        kf = ms.StratifiedKFold(n_splits=self.test_split_folds, shuffle=True)   
-                        kf_list = list(kf.split(self.test_data_df,self.test_data_df[self.dependent_variable]))
+                    if self.test_split_method == 1 : 
+                        if self.test_split_folds == 1:
+                            kf_folds = int(1/self.test_split_ratio)
+                            kf = ms.StratifiedKFold(n_splits=kf_folds, shuffle=True) 
+                            kf_list = []
+                            kf_list.append(list(kf.split(self.test_data_df,self.test_data_df[self.dependent_variable]))[0])
+                        else:   
+                            kf = ms.StratifiedKFold(n_splits=self.test_split_folds, shuffle=True)   
+                            kf_list = list(kf.split(self.test_data_df,self.test_data_df[self.dependent_variable]))
                     # customized split   
                     if self.test_split_method == 2 :
-                        kf_list = self.test_split(self.name, self.test_split_folds, self.test_data_df)
-                        
-                            
+                        kf_list = self.test_split(self.test_data_df.copy())
 
                 test_split_fold_id = 0 
-                for validation_index_split, test_index_split in kf_list:
+                for validation_index_split , test_index_split in kf_list:
                     validation_index = self.test_data_df.index[validation_index_split]
                     test_index = self.test_data_df.index[test_index_split]  
                     self.train_splits_df[test_split_fold_id]['no_gradient'] = self.train_data_df.index
                     self.test_splits_df[test_split_fold_id]['no_gradient'] = test_index
-                    self.train_cv_splits_df[test_split_fold_id][0]['no_gradient'] = self.train_data_df.index
-                    self.validation_cv_splits_df[test_split_fold_id][0]['no_gradient'] = validation_index                                                          
-#                     self.train_splits_df[test_split_fold_id]['no_gradient'] = self.train_data_df
-#                     self.test_splits_df[test_split_fold_id]['no_gradient'] = self.test_data_df.loc[test_index, :]
-#                     self.train_cv_splits_df[test_split_fold_id][0]['no_gradient'] = self.train_data_df
-#                     self.validation_cv_splits_df[test_split_fold_id][0]['no_gradient'] = self.test_data_df.loc[validation_index, :] 
+                    
+                    cv_validation_index = np.array_split(validation_index,self.cv_split_folds)
+                    
+                    for j in range(self.cv_split_folds):
+
+                        self.train_cv_splits_df[test_split_fold_id][j]['no_gradient'] = self.train_data_df.index
+                        self.validation_cv_splits_df[test_split_fold_id][j]['no_gradient'] = cv_validation_index[j]                                                          
+    #                     self.train_splits_df[test_split_fold_id]['no_gradient'] = self.train_data_df
+    #                     self.test_splits_df[test_split_fold_id]['no_gradient'] = self.test_data_df.loc[test_index, :]
+    #                     self.train_cv_splits_df[test_split_fold_id][0]['no_gradient'] = self.train_data_df
+    #                     self.validation_cv_splits_df[test_split_fold_id][0]['no_gradient'] = self.test_data_df.loc[validation_index, :] 
                     test_split_fold_id += 1 
                 print('done')
             else:
@@ -640,21 +596,22 @@ class alm_data:
                 
                 #Split each training set into cv_split_folds folds  (training - validation)
                 for i in range(self.test_split_folds):
+                    cur_train_data_df = self.train_data_df.loc[self.train_splits_df[i]['no_gradient'],:]
                     if self.cv_split_method == 0 :   
                         kf = ms.KFold(n_splits=self.cv_split_folds, shuffle=True) 
-                        kf_list = list(kf.split(self.train_splits_df[i]))  
+                        kf_list = list(kf.split(cur_train_data_df))  
                     # stratified split (keep prior)
                     if self.cv_split_method == 1 :   
                         kf = ms.StratifiedKFold(n_splits=self.cv_split_folds, shuffle=True)   
-                        kf_list = list(kf.split(self.train_splits_df[i]))
+                        kf_list = list(kf.split(cur_train_data_df))
                     # customized split   
                     if self.cv_split_method == 2 :
-                        kf_list = self.cv_split(self.name, self.cv_split_folds, self.train_splits_df[i])  
+                        kf_list = self.cv_split(self.name, self.cv_split_folds, cur_train_data_df)  
                         
                     cv_split_fold_id = 0 
                     for train_index_split, validation_index_split in kf_list:
-                        train_index = self.train_splits_df[i].index[train_index_split]
-                        validation_index = self.train_splits_df[i].index[validation_index_split]
+                        train_index = cur_train_data_df.index[train_index_split]
+                        validation_index = cur_train_data_df.index[validation_index_split]
                         self.train_cv_splits_df[i][cv_split_fold_id]['no_gradient'] = train_index
                         self.validation_cv_splits_df[i][cv_split_fold_id]['no_gradient'] = validation_index                     
 #                         self.train_cv_splits_df[i][cv_split_fold_id]['no_gradient'] = self.train_splits_df[i].loc[train_index, :]

@@ -237,7 +237,7 @@ class alm_es:
 #                     #Image(graph.create_png())
         return [train_y_predicted, train_score_df, test_y_predicted, test_score_df, feature_importance]
 
-    def run(self, features, dependent_variable, ml_type, train, test, extra_train=None, use_extra_train_data=0):
+    def run(self, features, dependent_variable, ml_type, train, test, extra_train=None, use_extra_train_data=0, nofit = 0):
         if self.if_feature_engineer:
             [train,test] = self.feature_engineer(train,test)
             
@@ -245,6 +245,11 @@ class alm_es:
         train_x = train.drop(dependent_variable, axis=1)  
         test_y = test[dependent_variable]   
         test_x = test.drop(dependent_variable, axis=1) 
+        
+        if extra_train.shape[0] !=0:
+            extra_train_y = extra_train[dependent_variable]
+            extra_train_x = extra_train.drop(dependent_variable, axis=1)  
+        
  
         if any(isinstance(i, list) for i in features):  # if features are nested list
             features = list(itertools.chain(*features))
@@ -252,16 +257,24 @@ class alm_es:
                 
         if (self.estimator == None) | ((self.single_feature_as_prediction == 1) & (len(features) == 1)): # if estimator is None, there is no need to train the model 
             feature_importance = pd.DataFrame(np.zeros(len(features)), index=features).transpose() 
-        else:
-            # fit the estimator        
-            if use_extra_train_data == 1:  # use extra training data, predict the label of the extra training data first
-                self.estimator.fit(train_x[features], train_y)
-                extra_train_data_y = self.estimator.predict_proba(extra_train_x[features])[range(len(extra_train_y)), 1].round()           
-                self.estimator.fit(pd.concat([train_x[features], extra_train_x[features]]), np.hstack((train_y, extra_train_y)))
-            if use_extra_train_data == 2:  # use extra training data directly, no prediction
-                self.estimator.fit(pd.concat([train_x[features], extra_train_x[features]]), np.hstack((train_y, extra_train_y)))
-            if use_extra_train_data == 0:
-                self.estimator.fit(train_x[features], train_y)   
+        else:            
+            if nofit == 0:
+                # fit the estimator        
+                if use_extra_train_data == 1:  # use extra training data, predict the label of the extra training data first
+                    self.estimator.fit(train_x[features], train_y)
+                    extra_train_data_y = self.estimator.predict_proba(extra_train_x[features])[range(len(extra_train_y)), 1].round()           
+                    self.estimator.fit(pd.concat([train_x[features], extra_train_x[features]]), np.hstack((train_y, extra_train_y)))
+                if use_extra_train_data == 2:  # use extra training data directly, no prediction
+                    self.estimator.fit(pd.concat([train_x[features], extra_train_x[features]]), np.hstack((train_y, extra_train_y)))
+                    
+                if use_extra_train_data == 3:  # only use extra training data 
+                    self.estimator.fit(extra_train_x[features],extra_train_y)                                    
+                    
+                if use_extra_train_data == 0:
+                    self.estimator.fit(train_x[features], train_y)  
+                
+                
+                 
             # record feature importance
             if self.feature_importance_name == 'coef_':
                 feature_importance = np.squeeze(self.estimator.coef_)
@@ -316,27 +329,33 @@ class alm_es:
 #             test_score_df['pcc'] = pcc
                 
             if (self.estimator == None) | ((self.single_feature_as_prediction == 1) & (len(features) == 1)):
-                test_y_predicted = test_x[features]
+#                 test_y_predicted = test_x[features]                
+                test_y_predicted = np.array(list(np.squeeze(test_x[features])))
             else:
                 test_y_predicted = self.estimator.predict(test_x[features])
             test_score_df = pd.DataFrame(np.zeros(2), index=['pcc', 'rmse']).transpose()                               
             rmse = alm_fun.rmse_cal(test_y, test_y_predicted)  
-            pcc = alm_fun.pcc_cal(test_y, test_y_predicted)         
+            pcc = alm_fun.pcc_cal(test_y, test_y_predicted)   
+            spc = alm_fun.spc_cal(test_y, test_y_predicted)
             test_score_df['rmse'] = rmse
             test_score_df['pcc'] = pcc
+            test_score_df['spc'] = spc
              
             # train score 
-            if (self.estimator == None) & ((self.single_feature_as_prediction == 1) & (len(features) == 1)):
+            if (self.estimator == None) | ((self.single_feature_as_prediction == 1) & (len(features) == 1)):
 #                 train_y_predicted = np.squeeze(train_x[features]) 
+#                 train_y_predicted = np.array(list(np.squeeze(train_x[features])))
                 train_y_predicted = [1]*train_x.shape[0]
             else:
                 train_y_predicted = self.estimator.predict(train_x[features]) 
             
             train_score_df = pd.DataFrame(np.zeros(2), index=['pcc', 'rmse']).transpose()                               
             rmse = alm_fun.rmse_cal(train_y, train_y_predicted)  
-            pcc = alm_fun.pcc_cal(train_y, train_y_predicted)         
+            pcc = alm_fun.pcc_cal(train_y, train_y_predicted)   
+            spc = alm_fun.spc_cal(train_y, train_y_predicted)
             train_score_df['rmse'] = rmse
             train_score_df['pcc'] = pcc
+            train_score_df['spc'] = spc
                 
         if ml_type == "classification_binary":            
 #             #validation or test set
@@ -373,11 +392,12 @@ class alm_es:
                     test_y_predicted = self.estimator.predict(test_x[features])
 #                 
             # make predictions on validation set               
-            test_score_df = pd.DataFrame(np.zeros(6), index=['size', 'prior', 'auroc', 'auprc', 'pfr', 'rfp']).transpose()      
+            test_score_df = pd.DataFrame(np.zeros(7), index=['size', 'prior', 'auroc', 'auprc', 'up_auprc', 'pfr', 'rfp']).transpose()      
             [best_y_predicted, metric, multiclass_metrics] = alm_fun.classification_metrics(test_y, test_y_predicted)
             test_score_df['size'] = len(test_y)
             test_score_df['auroc'] = metric['auroc']
             test_score_df['auprc'] = metric['auprc']
+            test_score_df['up_auprc'] = metric['up_auprc']
             test_score_df['prior'] = metric['prior']
             test_score_df['pfr'] = metric['precision_fixed_recall']
             test_score_df['rfp'] = metric['recall_fixed_precision']
@@ -397,11 +417,12 @@ class alm_es:
             new_train_y[new_train_y > 0.5] = 1
              
             # make predictions on training set              
-            train_score_df = pd.DataFrame(np.zeros(6), index=['size', 'prior', 'auroc', 'auprc', 'pfr', 'rfp']).transpose()                                   
+            train_score_df = pd.DataFrame(np.zeros(7), index=['size', 'prior', 'auroc', 'auprc','up_auprc','pfr', 'rfp']).transpose()                                   
             [best_y_predicted, metric, multiclass_metrics] = alm_fun.classification_metrics(new_train_y, train_y_predicted)
             train_score_df['size'] = len(new_train_y)
             train_score_df['auroc'] = metric['auroc']
             train_score_df['auprc'] = metric['auprc']
+            train_score_df['up_auprc'] = metric['up_auprc']
             train_score_df['prior'] = metric['prior']
             train_score_df['pfr'] = metric['precision_fixed_recall']
             train_score_df['rfp'] = metric['recall_fixed_precision']
@@ -445,7 +466,7 @@ class alm_es:
         return_dict ['train_score_df'] = train_score_df
         return_dict ['test_y_predicted'] = test_y_predicted
         return_dict ['test_score_df'] = test_score_df
-        return_dict ['feature_importance'] = feature_importance
+        return_dict ['feature_importance'] = feature_importance.transpose().sort_values([0])
         return_dict ['train_y_predicted'] = train_y_predicted
         return_dict ['predicted_df'] = predicted_test
 
