@@ -1,10 +1,10 @@
-#                                  Imputation web application setup guide
+#Imputation web application setup guide
 					
-    Welcome to the imputation web application setup guide. The purpose of this guide is to demonstrate how to build the imputation web application from scratch. The imputation web application is embedded in a customized Docker image (https://www.docker.com/), which can be hosted on any publicly accessible server.  In our case it is a VM instance on the Google Cloud platform. Details on how to host Docker image on a Google VM instance can be found via this link https://cloud.google.com/compute/docs/containers/deploying-containers. This guide assumes you already have a publicly accessible server.
+Welcome to the imputation web application setup guide. The purpose of this guide is to demonstrate how to build the imputation web application from scratch. The imputation web application is embedded in a customized Docker image (https://www.docker.com/), which can be hosted on any publicly accessible server.  In our case it is a VM instance on the Google Cloud platform. Details on how to host Docker image on a Google VM instance can be found via this link https://cloud.google.com/compute/docs/containers/deploying-containers. This guide assumes you already have a publicly accessible server.
     There are three main steps to set up the imputation web application:
-	•	Build Docker image with Apache web server and Python support
-	•	Deploy the front-end and back-end scripts
-	•	Run Docker image on the publicly accessible server
+	-Build Docker image with Apache web server and Python support
+	-Deploy the front-end and back-end scripts
+	-Run Docker image on the publicly accessible server
     Here are the details for each step:
 	•	Build Docker image with Apache web server and Python support.
     Please follow the instructions on https://docs.docker.com/ to install Docker on your own system,  then copy https://github.com/joewuca/imputation/tree/master/imputation/docker folder to your system. Under the Docker folder, please run command “docker build -t YOUR_DOCKERIMAGENAME”  to create the Docker image configured by the Dockerfile under the same folder. The newly-built Docker image comes equipped with Apache web server (with WSGI support) and Python modules needed for the imputation pipeline to run properly.
