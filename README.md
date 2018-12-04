@@ -1,4 +1,4 @@
-Imputation web application setup guide
+					Imputation web application setup guide
 Welcome to the imputation web application setup guide. The purpose of this guide is to demonstrate how to build the imputation web application from scratch. The imputation web application is embedded in a customized Docker image (https://www.docker.com/), which can be hosted on any publicly accessible server.  In our case it is a VM instance on the Google Cloud platform. Details on how to host Docker image on a Google VM instance can be found via this link https://cloud.google.com/compute/docs/containers/deploying-containers. This guide assumes you already have a publicly accessible server.
 There are three main steps to set up the imputation web application:
 	•	Build Docker image with Apache web server and Python support
