@@ -6,9 +6,6 @@ import time
 import itertools
 import pickle
 import copy
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn import neighbors as knn
 from sklearn import linear_model as lm
 from sklearn import feature_selection as fs
@@ -241,7 +238,8 @@ class alm_project:
         es_type.append('classification_binary')  
         
         # Gradient boosted tree regressor for classification
-        es.append(xgb.XGBRegressor(**{'n_jobs': 8,'subsample': 0.8, 'colsample_bytree': 1, 'max_depth': 3, 'n_estimators': 100, 'learning_rate': 0.02}))
+#         es.append(xgb.XGBRegressor(**{'n_jobs': 8,'subsample': 0.8, 'colsample_bytree': 1, 'max_depth': 3, 'n_estimators': 100, 'learning_rate': 0.02}))
+        es.append(xgb.XGBRegressor(**{'n_jobs': 8}))
         es_scores.append('auprc')
         es_score_directions.append(1)
         es_gs_range.append({'learning_rate':np.arange(0.01, 0.06, 0.01), 'max_depth': np.arange(3, 5, 1), 'n_estimators':range(100, 400, 100)})
@@ -250,7 +248,7 @@ class alm_project:
         es_type.append('classification_binary')
         
         # Gradient boosted tree Classifier
-        es.append(xgb.XGBClassifier(**{'subsample': 0.9, 'colsample_bytree': 1, 'max_depth': 3, 'n_estimators': 200, 'learning_rate': 0.02}))
+        es.append(xgb.XGBClassifier())
         es_scores.append('auroc')
         es_score_directions.append(1)
         es_gs_range.append({'learning_rate':np.arange(0.01, 0.1, 0.01), 'max_depth': np.arange(3, 6, 1), 'n_estimators':range(100, 500, 100)})
@@ -259,7 +257,8 @@ class alm_project:
         es_type.append('classification_binary')
         
         # Random Forest regressor for classification
-        es.append(ensemble.RandomForestRegressor(**{'n_jobs':-1, 'n_estimators': 200, 'max_features': 'auto'}))
+#         es.append(ensemble.RandomForestRegressor(**{'n_jobs':-1, 'n_estimators': 200, 'max_features': 'auto'}))
+        es.append(ensemble.RandomForestRegressor())
         es_scores.append('auroc')
         es_score_directions.append(1)
         es_gs_range.append({'max_features':range(10, 100, 10), 'n_estimators':range(100, 200, 100), 'test_bs_result':['True', 'False']})
@@ -278,7 +277,8 @@ class alm_project:
         
         
         # ElasticNet Regressor for classification
-        es.append(lm.ElasticNet(alpha=0.01, l1_ratio=0.5))
+#         es.append(lm.ElasticNet(alpha=0.01, l1_ratio=0.5))
+        es.append(lm.ElasticNet())
         es_scores.append('auroc')
         es_score_directions.append(0)
         es_gs_range.append({'alpha':np.arange(0, 1, 0.1), 'l1_ratio':np.arange(0, 1, 0.1)})
@@ -419,10 +419,11 @@ class alm_project:
                 es_init_params['score_name'] = es_scores[i]
                 es_init_params['score_direction'] = es_score_directions[i]
                 es_init_params['feature_importance_name'] = es_importance[i]
+                es_init_params['prediction_transformation'] = None
                 estimators[es_names[i]] = alm_es.alm_es(es_init_params)
         return estimators
     
-    def run(self,refresh_data = 0):               
+    def run(self,refresh_data = 0, nofit = 0):               
         return_objs = {}
         self.estimators[self.run_estimator_name].score_name = self.run_estimator_scorename   
    
@@ -434,7 +435,7 @@ class alm_project:
             if refresh_data == 1:   
                 self.data[data_name].refresh_data()
             etime1 = time.time()
-            alm_fun.show_msg(self.log,self.verbose,"Class: [alm_project] Fun: [run] -- Current Modes: " + str(self.modes) + " Current Data: " + data_name + ", data preparation time was %g seconds" % (etime1 - stime1)) 
+#             alm_fun.show_msg(self.log,self.verbose,"Class: [alm_project] Fun: [run] -- Current Modes: " + str(self.modes) + " Current Data: " + data_name + ", data preparation time was %g seconds" % (etime1 - stime1)) 
     
         for mode in self.modes: 
             return_objs[mode] = {}  
@@ -444,7 +445,7 @@ class alm_project:
                 # run project in different mode 
                 #**************************************************************************
                 if mode == 'target_prediction': 
-                    r = self.ml.run_target_prediction(self.estimators[self.run_estimator_name], self.data[data_name])
+                    r = self.ml.run_target_prediction(self.estimators[self.run_estimator_name], self.data[data_name],nofit = nofit)
                     return_objs[mode][data_name] = r['target_y_predicted']
                     
                 if mode == 'test_prediction':
@@ -452,38 +453,130 @@ class alm_project:
                         r = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
                         alm_fun.show_msg(self.log,self.verbose,'grid search best socre:' + str(r['gs_opt_cv_score']) + 'and best parameters:' + str(r['gs_opt_params']))                      
                     
-                    r = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name])
+                    r = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name],nofit = nofit)
                     test_y_predicted = r['test_y_predicted']                                                 
                     test_bs_result = r['test_bs_result']
                     test_bs_result.columns = ['test_' + x for x in test_bs_result.columns]      
                     feature_importance = r['feature_importance']
-                    alm_fun.show_msg(self.log,self.verbose,str(test_bs_result))
-                    alm_fun.show_msg(self.log,self.verbose,str(feature_importance))                                        
+#                     alm_fun.show_msg(self.log,self.verbose,str(test_bs_result))
+#                     alm_fun.show_msg(self.log,self.verbose,str(feature_importance))                                        
                     test_bs_result.to_csv(self.project_path + data_name +'_test_results' + '_fold_' + str(self.data[data_name].cur_test_split_fold) + '_' + str(self.data[data_name].cur_gradient_key) +'.csv')                              
                     return_objs[mode][data_name] = [test_bs_result,feature_importance,test_y_predicted]
+                                        
+                if mode == 'test_prediction_all_folds':
+                    tp_results = None
+                    tp_predictions = None
+                    feature_importance = None
+                                        
+                    for j in range(self.data[data_name].test_split_folds):
+                        self.data[data_name].cur_test_split_fold = j  
+                        self.data[data_name].train_features = self.cv_selected_features[j]
+
+                        if self.grid_search_on == 1: 
+                            r = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
+                            alm_fun.show_msg(self.log,self.verbose,'grid search best socre:' + str(r['gs_opt_cv_score']) + 'and best parameters:' + str(r['gs_opt_params']))                      
+                        
+                        if (self.outloop_cv_fit_once  == 1) & (j!= 0):                        
+                            r = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name], nofit = 1)                            
+                        else:
+                            r = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name], nofit = 0)
+                                
+                        feature_fold_importance = r['feature_importance'].reset_index()
+                        feature_fold_importance.columns = ['feature',str(j)]                                                       
+                        tp_fold_predictions = r['test_y_predicted']                                                 
+                        tp_fold_results = r['test_bs_result']
+                        tp_fold_results.columns = ['test_' + x for x in tp_fold_results.columns]
+
+                        if feature_importance is None:
+                            feature_importance =  feature_fold_importance
+                        else:
+                            feature_importance = pd.merge(feature_importance,feature_fold_importance)
+                                                
+                        if tp_results is None:
+                            tp_results = tp_fold_results
+                        else:
+                            tp_results = pd.concat([tp_results,tp_fold_results])   
+      
+                        if self.data[data_name].if_engineer:
+                            predition_labels = self.data[data_name].test_splits_engineered_df[self.data[data_name].cur_test_split_fold][self.data[data_name].cur_gradient][self.data[data_name].dependent_variable]                                    
+                        else:
+                            predition_labels = self.data[data_name].test_data_index_df.loc[self.data[data_name].test_splits_df[self.data[data_name].cur_test_split_fold][self.data[data_name].cur_gradient_key],self.data[data_name].dependent_variable]   
+                              
+                        tp_fold_predictions = pd.concat([tp_fold_predictions, predition_labels], axis=1)
+
+                        if tp_predictions is None:
+                            tp_predictions = tp_fold_predictions
+                        else:
+                            tp_predictions = pd.concat([tp_predictions,tp_fold_predictions])
+                                                
+                    tp_final_results = tp_results.reset_index()   
+                    tp_final_results.to_csv(self.project_path + data_name +'_test_predition_folds_results.csv')                              
+
+#                     alm_fun.show_msg(self.log,self.verbose,str(tp_results))                         
+                    tp_final_results = tp_final_results.groupby(['index'])['test_auroc','test_auprc','test_rfp','test_prior'].agg(['mean','std'])                                                
+                    tp_final_results.columns = ['test_macro_auroc_mean','test_macro_auroc_std','test_macro_auprc_mean','test_macro_auprc_std','test_macro_rfp_mean','test_macro_rfp_std','test_prior_mean','test_prior_std']
+                    tp_final_results.index = [self.predictor_name]
                     
+                    tp_predictions.columns = [self.predictor_name,'label']
+                    tp_micro_preditions = tp_predictions.apply(lambda x: np.array([alm_fun.classification_metrics(np.array(tp_predictions['label']),np.array(x))[1][y]  for y in ['auroc','auprc','recall_fixed_precision']]),axis = 0)
+                    tp_micro_preditions.drop(columns = {'label'},inplace = True)
+                    tp_micro_preditions = tp_micro_preditions.transpose()
+
+                    tp_micro_preditions.columns = ['test_micro_auroc','test_micro_auprc','test_micro_rfp']                    
+                    tp_final_results = pd.concat([tp_final_results,tp_micro_preditions],axis = 1)                                                      
+                    alm_fun.show_msg(self.log,self.verbose,str(tp_final_results))
+                                                            
+                    tp_final_results.to_csv(self.project_path + data_name +'_test_predition_all_folds_results.csv')                              
+                    return_objs[mode][data_name] = [tp_results,tp_predictions,feature_importance,tp_final_results]
+                    
+                if mode == "cross_validation_all_folds":
+                    cv_results = None
+                    for j in range(self.data[data_name].test_split_folds):
+                        self.data[data_name].cur_test_split_fold = j  
+                        self.data[data_name].train_features = self.cv_selected_features[j]
+                        if self.grid_search_on == 1:                        
+                            [gs_opt_params, validation_cv_fold_result, gs_fold_results] = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
+                            [test_y_predicted, feature_importance, test_bs_fold_result, test_bs_score] = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name])
+                            alm_fun.show_msg(self.log,self.verbose,'all_features - cv:' + str(validation_cv_fold_result['mean']) + ' ' + str(validation_cv_fold_result['ste']) + ' test:' + str(test_bs_score['mean']) + ' ' + str(test_bs_score['ste']) + " parameters:" + str(gs_opt_params))
+                        else:
+                            if ((self.outloop_cv_fit_once == 1) & (j!= 0)): 
+                                cv_fold_result = self.ml.run_cv_prediction(self.estimators[self.run_estimator_name], self.data[data_name],nofit = 1)
+                            else:
+                                cv_fold_result = self.ml.run_cv_prediction(self.estimators[self.run_estimator_name], self.data[data_name],nofit = 0)
+                            train_cv_fold_result = cv_fold_result['train_cv_result']      
+                            train_cv_fold_result.columns = ['train_' + x for x in train_cv_fold_result.columns]
+                                                                             
+                            validation_cv_fold_result = cv_fold_result['validation_cv_result']      
+                            validation_cv_fold_result.columns = ['validation_' + x for x in validation_cv_fold_result.columns]
+                                                        
+#                           test_result = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name],nofit = 1)
+#                           test_bs_result = test_result['test_bs_result']
+#                           test_bs_result.columns = ['test_' + x for x in test_bs_result.columns]
+                            
+                        cv_fold_results = pd.concat([train_cv_fold_result,validation_cv_fold_result],axis = 1)  
+                        cv_fold_results['fold'] = j                          
+                        if cv_results is None:
+                            cv_results = cv_fold_results
+                        else:
+                            cv_results = pd.concat([cv_results,cv_fold_results])   
+                            
+#                     alm_fun.show_msg(self.log,self.verbose,str(cv_results))
+                    return_objs[mode][data_name] = [cv_results]
+                        
+                                                
                 if mode == 'cross_validation':
                     if self.grid_search_on == 1:                        
                         [gs_opt_params, validation_cv_result, gs_results] = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
                         [test_y_predicted, feature_importance, test_bs_result, test_bs_score] = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name])
                         alm_fun.show_msg(self.log,self.verbose,'all_features - cv:' + str(validation_cv_result['mean']) + ' ' + str(validation_cv_result['ste']) + ' test:' + str(test_bs_score['mean']) + ' ' + str(test_bs_score['ste']) + " parameters:" + str(gs_opt_params))
                     else:
-                        cv_result = self.ml.run_cv_prediction(self.estimators[self.run_estimator_name], self.data[data_name])
-                        test_result = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name])                                                 
+                        cv_result = self.ml.run_cv_prediction(self.estimators[self.run_estimator_name], self.data[data_name])                                                                   
                         validation_cv_result = cv_result['validation_cv_result']      
                         validation_cv_result.columns = ['cv_' + x for x in validation_cv_result.columns]
-
-                        test_bs_result = test_result['test_bs_result']
-                        test_bs_result.columns = ['test_' + x for x in test_bs_result.columns]
-
-                        feature_importance = test_result['feature_importance'].transpose()
-                        feature_importance = feature_importance.sort_values([0])
-
-                    feature_importance.to_csv(self.project_path + data_name +'_feature_importance.csv', encoding='utf-8')
-                    alm_fun.show_msg(self.log,self.verbose,  data_name + "\n" + str(pd.concat([validation_cv_result, test_bs_result], axis=1)))
-                    alm_fun.show_msg(self.log,self.verbose,str(feature_importance))
+                        train_cv_result = cv_result['train_cv_result']      
+                        train_cv_result.columns = ['cv_' + x for x in train_cv_result.columns]
                                                                       
-                    return_objs[mode][data_name] = [str(validation_cv_result), str(test_bs_result),feature_importance]
+                    return_objs[mode][data_name] = [validation_cv_result, train_cv_result]
                     
                 if mode == 'gradient_comparison':                    
                     gc_results = pd.DataFrame(columns = ['params','gradient','cv_score','cv_score_ste'])
@@ -565,75 +658,74 @@ class alm_project:
                     max_score = gs_opt_score['mean'].get_values()[0]
                     gs_results.to_csv(self.project_path + 'grid_search_results.csv', encoding='utf-8')
                     return_objs[mode][data_name] = [gs_results,max_score,gs_opt_params]
-            
+
+                if mode == 'feature_comparison_test':
+                    fc_results = None
+                    fc_predictions_xyz = None
+                    
+                    for j in range(self.data[data_name].test_split_folds):
+                        self.data[data_name].cur_test_split_fold = j  
+                        fc_fold_results = None
+                        fc_fold_predictions = None                                                       
+                        for i in range(len(self.compare_features)):
+                            self.data[data_name].train_features = self.compare_features[i]
+                            r = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name])      
+                            test_bs_result = r['test_bs_result']
+                            test_predictions = r['test_y_predicted']
+#                             test_predictions = r['test_bs_result']
+                            
+                            test_bs_result.index = [self.compare_features_name[i]]
+                            test_bs_result.columns = ['test_' + x for x in test_bs_result.columns]  
+                                                                                                             
+                            if  fc_fold_results is None:                  
+                                fc_fold_results = test_bs_result
+                            else:
+                                fc_fold_results = pd.concat([fc_fold_results, test_bs_result])
+                                                              
+                            if  fc_fold_predictions is None:                  
+                                fc_fold_predictions = test_predictions
+                            else:
+                                fc_fold_predictions = pd.concat([fc_fold_predictions, test_predictions], axis=1)                         
+                            
+                            alm_fun.show_msg(self.log,self.verbose,self.compare_features_name[i])
+                            
+                        if self.data[data_name].if_engineer:
+                            predition_labels = self.data[data_name].test_splits_engineered_df[self.data[data_name].cur_test_split_fold][self.data[data_name].cur_gradient][self.data[data_name].dependent_variable]                                    
+                        else:
+                            predition_labels = self.data[data_name].test_data_index_df.loc[self.data[data_name].test_splits_df[self.data[data_name].cur_test_split_fold][self.data[data_name].cur_gradient_key],self.data[data_name].dependent_variable]   
+                              
+                        fc_fold_predictions = pd.concat([fc_fold_predictions, predition_labels], axis=1)
+                    
+                        if fc_results is None:
+                            fc_results = fc_fold_results
+                        else:
+                            fc_results = pd.concat([fc_results,fc_fold_results])   
+    
+                        if fc_predictions_xyz is None:
+                            fc_predictions_xyz = fc_fold_predictions
+                        else:
+                            fc_predictions_xyz = pd.concat([fc_predictions_xyz,fc_fold_predictions])
+                            
+                    fc_results = fc_results.reset_index()                            
+                    fc_results = fc_results.groupby(['index'])['test_auroc','test_auprc','test_rfp','test_prior'].agg(['mean','std'])                                                
+                    fc_results.columns = ['test_macro_auroc_mean','test_macro_auroc_std','test_macro_auprc_mean','test_macro_auprc_std','test_macro_rfp_mean','test_macro_rfp_std','test_prior_mean','test_prior_std']
+
+                    fc_predictions_xyz.columns = self.compare_features_name + ['fitness']                    
+                    fc_micro_preditions_xyz = fc_predictions_xyz.apply(lambda x: np.array([alm_fun.classification_metrics(np.array(fc_predictions_xyz['fitness']),np.array(x))[1][y]  for y in ['auroc','auprc','recall_fixed_precision']]),axis = 0)
+                    fc_micro_preditions_xyz.drop(columns = {'fitness'},inplace = True)
+                    fc_micro_preditions_xyz = fc_micro_preditions_xyz.transpose()
+                    fc_micro_preditions_xyz.columns = ['test_micro_auroc','test_micro_auprc','test_micro_rfp']
+                    
+                    fc_results = pd.concat([fc_results,fc_micro_preditions_xyz],axis = 1)
+                    fc_results = fc_results.sort_values('test_micro_auprc',ascending = False)
+                    fc_predictions_xyz.to_csv(self.project_path + 'output/' + data_name +'_fc_predictions.csv',index = False)
+                    alm_fun.show_msg(self.log,self.verbose,str(fc_results))
+                                                
                 if mode == 'feature_comparison':
                     fc_results = None
                     fc_predictions = None
-                    
-#                     if len(self.start_features) == 0:
-#                         alm_fun.show_msg(self.log,self.verbose,'start_features: N/A')
-#                     else:   
-#                         self.data[data_name].train_features = self.start_features
-#                         if self.grid_search_on == 1:                        
-#                             [gs_opt_params, validation_cv_result, gs_results] = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
-#                             test_bs_result = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name],self.data[data_name].cur_test_split_fold,self.data[data_name].cur_gradient_key,self.data[data_name].if_engineer)[-1]
-#                             alm_fun.show_msg(self.log,self.verbose,'start_features - cv:' + str(validation_cv_result['mean']) + ' ' + str(validation_cv_result['ste']) + ' test:' + str(test_bs_result['mean']) + ' ' + str(test_bs_result['ste']) + " parameters:" + str(gs_opt_params))
-#                         else:       
-#                             cv_result = self.ml.run_cv_prediction(self.estimators[self.run_estimator_name], self.data[data_name],'',self.data[data_name].cur_test_split_fold,self.data[data_name].cur_gradient_key,self.data[data_name].if_engineer)
-#                             test_result = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name],self.data[data_name].cur_test_split_fold,self.data[data_name].cur_gradient_key,self.data[data_name].if_engineer)                                                 
-#                             validation_cv_results = cv_result[-3]      
-#                             test_bs_results = test_result[-2]
-#                             test_predicitons = pd.Series(test_result[0], name='start_features')
-#                             validation_cv_results.index = ['start_features']
-#                             validation_cv_results.columns = ['cv_' + x for x in validation_cv_results.columns]
-#                             test_bs_results.index = ['start_features']
-#                             test_bs_results.columns = ['test_' + x for x in test_bs_results.columns] 
-#                             validation_cv_result = cv_result[-1]      
-#                             test_bs_result = test_result[-1]
-#                         if  fc_results is None:                  
-#                             fc_results = pd.concat([validation_cv_results, test_bs_results], axis=1)
-#                         else:
-#                             fc_results = pd.concat([fc_results, pd.concat([validation_cv_results, test_bs_results], axis=1)])   
-#                                                     
-#                         if  fc_predictions is None:                  
-#                             fc_predictions = test_predicitons
-#                         else:
-#                             fc_predictions = pd.concat([fc_predictions, test_predicitons], axis=1)  
-                                                   
-#                     if len(self.train_features) == 0:
-#                         alm_fun.show_msg(self.log,self.verbose,'all_features: N/A')
-#                     else:   
-#                         self.data[data_name].train_features = self.train_features
-#                         if self.grid_search_on == 1:                        
-#                             [gs_opt_params, validation_cv_result, gs_results] = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
-#                             test_bs_result = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name],self.data[data_name].cur_test_split_fold,self.data[data_name].cur_gradient_key,self.data[data_name].if_engineer)[-1]
-#                         else:
-#                             cv_result = self.ml.run_cv_prediction(self.estimators[self.run_estimator_name], self.data[data_name])
-#                             test_result = self.ml.run_test_prediction(self.estimators[self.run_estimator_name], self.data[data_name])                                                 
-#                             validation_cv_results = cv_result['validation_cv_result']      
-#                             test_bs_results = test_result['test_bs_result']
-#                             test_predicitons = pd.Series(test_result['test_y_predicted'], name='all_features')
-#                             validation_cv_results.index = ['all_features']
-#                             validation_cv_results.columns = ['cv_' + x for x in validation_cv_results.columns]
-#                             test_bs_results.index = ['all_features']
-#                             test_bs_results.columns = ['test_' + x for x in test_bs_results.columns]   
-#                         if  fc_results is None:                  
-#                             fc_results = pd.concat([validation_cv_results, test_bs_results], axis=1)
-#                         else:
-#                             fc_results = pd.concat([fc_results, pd.concat([validation_cv_results, test_bs_results], axis=1)])
-#                             
-#                         if  fc_predictions is None:                  
-#                             fc_predictions = test_predicitons
-#                         else:
-#                             fc_predictions = pd.concat([fc_predictions, test_predicitons], axis=1)  
                                                                           
                     for i in range(len(self.compare_features)):
-#                         if self.feature_compare_direction == 0:
-#                             self.data[data_name].train_features = self.start_features + [self.compare_features[i]]
-#                         else:
-#                             compare_features_copy = self.compare_features.copy()   
-#                             compare_features_copy = self.remove_features(compare_features_copy, i)   
-#                             self.data[data_name].train_features = compare_features_copy
                         self.data[data_name].train_features = self.compare_features[i]
                         if self.grid_search_on == 1:                        
                             r = self.ml.grid_search(self.estimators[self.run_estimator_name], self.data[data_name])
@@ -681,17 +773,11 @@ class alm_project:
                         auroc_plotname = self.project_path + 'output/' + mode + '_' + data_name + '_fold_' + str(self.data[data_name].cur_test_split_fold) + '_' + str(self.data[data_name].cur_gradient_key) + '_auroc.png'
                         alm_fun.plot_prc(predition_labels, fc_predictions[self.compare_features_name_forplot], auprc_plotname, 20, 10, None, 0.9, 0.9, 'AUPRC Comparison')
                         alm_fun.plot_roc(predition_labels, fc_predictions[self.compare_features_name_forplot], auroc_plotname, 20, 10, None, 0.9, 0.9, 'AUROC Comparison')
-
                     return_objs[mode][data_name] = fc_results
+                    
                 etime2 = time.time()
-                alm_fun.show_msg(self.log,self.verbose,"Class: [alm_project] Fun: [run] -- Current Mode: " + "[" + mode + "]" + " Current Data: " + data_name + ", running time was %g seconds" % (etime2 - stime2))                 
-#                 if (mode != 'prediction') & (mode != 'cross_validation') & (mode != 'gradient_comparison') :                
-# #                    plot for figure for the current result   
-#                    plot_column_names = [return_objs[mode][data_name].columns[x] for x in self.plot_columns]
-# #                    sort by the first column in the plot
-#                    return_objs[mode][data_name] = return_objs[mode][data_name].sort_values(return_objs[mode][data_name].columns[self.plot_columns[0]])                             
-#                    self.project_plot(return_objs[mode][data_name][plot_column_names], mode, data_name, x_label=mode, y_label=self.ml_score, ylim_max=self.plot_vmax, ylim_min=self.plot_vmin, fig_w=self.fig_w, fig_h=self.fig_h)
-         
+#                 alm_fun.show_msg(self.log,self.verbose,"Class: [alm_project] Fun: [run] -- Current Mode: " + "[" + mode + "]" + " Current Data: " + data_name + ", running time was %g seconds" % (etime2 - stime2))                 
+
         return (return_objs)
     
     def project_plot(self, data, mode, data_name, x_label, y_label, ylim_min=0, ylim_max=0.5, fig_w=20 , fig_h=5):

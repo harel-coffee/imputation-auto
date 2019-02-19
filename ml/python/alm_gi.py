@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib
+from seaborn.palettes import color_palette
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -17,12 +18,10 @@ import itertools
 import time
 import math
 import random
-import pydotplus 
 import traceback
 import re
 import gzip
 import urllib
-
 import subprocess
 
 from subprocess import call
@@ -35,16 +34,8 @@ from numpy import inf
 from cgi import log
 from sklearn.metrics.ranking import roc_auc_score
 from posix import lstat
-from lxml import etree
 import xml.etree.ElementTree as ET
 from io import StringIO
-import mysql.connector
-# from IPython.core.tests.test_inputsplitter import line
-
-# pd.set_option('display.height', 1000)
-# pd.set_option('display.max_rows', 500)
-# pd.set_option('display.max_columns', 500)
-# pd.set_option('display.width', 1000)
 
 
 def range_list(start, end, folds):
@@ -134,52 +125,53 @@ class alm_gi:
         self.funsum_scores = ['fitness']
         self.funsum_centralities = ['mean']
         self.funsum_properties = ['in_domain','aa_psipred']
-        self.funsum_dmsfiles = self.db_path + 'dms/funregressor_training_final.csv'
+        self.funsum_dmsfiles = self.db_path + 'dms/funregressor_training_from_imputation_final.csv'
         self.funsum_weightedby_columns = ['']
         self.funsum_weightedby_columns_inverse = [0]
-        self.create_funsums(quality_cutoff=0)
+        self.create_funsums(quality_cutoff = 0,pos_importance_type = 'pos_importance_median',pos_importance_value = 0.8)
+        
         #mafsum and patsum
         self.mafsum_scores = ['gnomad_af']
         self.mafsum_centralities = ['normalization']
         self.mafsum_properties = []
         self.patsum_centralities = ['mean']
-        
+         
         #accsum (accessibility)
         self.get_human_codon_usage()
         self.create_accsums()
-                
+                 
         #blosums
         [self.df_blosums, self.dict_blosums] = self.get_blosums()
-        
-        ####***************************************************************************************************************************************************************
-        # pdb to uniprot (be aware there are cases that PDB id is 'XEXX', the pandas will read it as float
-        ####***************************************************************************************************************************************************************
-        self.pdb_to_uniprot = pd.read_csv(self.db_path + 'pdb/csv/pdb_chain_uniprot.csv', dtype={"PDB": str})
-        ####***************************************************************************************************************************************************************
-        # ensembl
-        ####***************************************************************************************************************************************************************
-        self.ensembl_seqdict = np.load(self.db_path + 'ensembl/npy/ensembl_seq_dict.npy').item()
+#         
+#         ####***************************************************************************************************************************************************************
+#         # pdb to uniprot (be aware there are cases that PDB id is 'XEXX', the pandas will read it as float
+#         ####***************************************************************************************************************************************************************
+#         self.pdb_to_uniprot = pd.read_csv(self.db_path + 'pdb/csv/pdb_chain_uniprot.csv', dtype={"PDB": str})
+#         ####***************************************************************************************************************************************************************
+#         # ensembl
+#         ####***************************************************************************************************************************************************************
+#         self.ensembl_seqdict = np.load(self.db_path + 'ensembl/npy/ensembl_seq_dict.npy').item()
         ####***************************************************************************************************************************************************************
         # uniprot
         ####***************************************************************************************************************************************************************
-        self.uniprot_seqdict = np.load(self.db_path + 'uniprot/npy/uniprot_seq_dict.npy').item()
-        self.uniprot2ensembl_dict = np.load(self.db_path + 'uniprot/npy/uniprot2ensembl_dict.npy').item()
-        self.uniprot_reviewed_ids = np.load(self.db_path + 'uniprot/npy/uniprot_reviewed_ids.npy')
-        self.uniprot_isoform_ids = np.load(self.db_path + 'uniprot/npy/uniprot_isoform_ids.npy')
-        self.uniprot_df = pd.read_csv(self.db_path + 'uniprot/csv/uniprot_df.csv')        
-        self.dict_uniprot_ac2seq = np.load(self.db_path + 'uniprot/npy/dict_uniprot_ac2seq.npy')
-        self.dict_uniprot_gene2ac = np.load(self.db_path + 'uniprot/npy/dict_uniprot_gene2ac.npy')
-        self.dict_uniprot_ac2gname_gsyn = np.load(self.db_path + 'uniprot/npy/dict_uniprot_ac2gname_gsyn.npy')
-        self.dict_uniprot_ac2gname = np.load(self.db_path + 'uniprot/npy/dict_uniprot_ac2gname.npy').item()  
-              
+#         self.uniprot_seqdict = np.load(self.db_path + 'uniprot/npy/uniprot_seq_dict.npy').item()
+#         self.uniprot2ensembl_dict = np.load(self.db_path + 'uniprot/npy/uniprot2ensembl_dict.npy').item()
+#         self.uniprot_reviewed_ids = np.load(self.db_path + 'uniprot/npy/uniprot_reviewed_ids.npy')
+#         self.uniprot_isoform_ids = np.load(self.db_path + 'uniprot/npy/uniprot_isoform_ids.npy')
+#         self.uniprot_df = pd.read_csv(self.db_path + 'uniprot/csv/uniprot_df.csv')        
+#         self.dict_uniprot_ac2seq = np.load(self.db_path + 'uniprot/npy/dict_uniprot_ac2seq.npy')
+#         self.dict_uniprot_gene2ac = np.load(self.db_path + 'uniprot/npy/dict_uniprot_gene2ac.npy')
+#         self.dict_uniprot_ac2gname_gsyn = np.load(self.db_path + 'uniprot/npy/dict_uniprot_ac2gname_gsyn.npy')
+#         self.dict_uniprot_ac2gname = np.load(self.db_path + 'uniprot/npy/dict_uniprot_ac2gname.npy').item()  
+                
         ####***************************************************************************************************************************************************************
         # refseq
         ####***************************************************************************************************************************************************************           
-        self.refseq_vids = pd.read_csv(self.db_path + 'refseq/csv/refseq_vids.csv')    
-        self.refseq2uniprot_isoform_dict = np.load(self.db_path + 'refseq/npy/refseq2uniprot_isoform_dict.npy').item()
-        self.refseq2uniprot_dict = np.load(self.db_path + 'refseq/npy/refseq2uniprot_dict.npy').item()
-        self.refseq_seqdict = np.load(self.db_path + 'refseq/npy/refseq_seq_dict.npy').item() 
-        
+#         self.refseq_vids = pd.read_csv(self.db_path + 'refseq/csv/refseq_vids.csv')    
+#         self.refseq2uniprot_isoform_dict = np.load(self.db_path + 'refseq/npy/refseq2uniprot_isoform_dict.npy').item()
+#         self.refseq2uniprot_dict = np.load(self.db_path + 'refseq/npy/refseq2uniprot_dict.npy').item()
+#         self.refseq_seqdict = np.load(self.db_path + 'refseq/npy/refseq_seq_dict.npy').item() 
+         
         ####***************************************************************************************************************************************************************
         # ucsc
         ####***************************************************************************************************************************************************************           
@@ -449,14 +441,16 @@ class alm_gi:
             mutsum_codon_matrix_df.to_csv(self.db_path + 'mutsum/' + 'mutsum_codon_' + species + '.csv', index=False)
             mutsum_aa_matrix_df.to_csv(self.db_path + 'mutsum/' + 'mutsum_' + species + '.csv', index=False)
     
-    def create_accsums(self, titv_ratio=2):        
+    def create_accsums(self, titv_ratio=2,output_path = None):        
         self.accsum_df = pd.DataFrame(columns=['aa_ref', 'aa_alt', 'accessibility'])        
         for aa_ref in self.lst_aa_21:
             for aa_alt in self.lst_aa_21:
                 cur_df = pd.DataFrame.from_records([(aa_ref, aa_alt, self.get_aa_accessibility(aa_ref, aa_alt, titv_ratio))], columns=['aa_ref', 'aa_alt', 'accessibility'])
                 self.accsum_df = self.accsum_df.append(cur_df)
         self.accsum_df['accessibility_ste'] = 0
-        self.accsum_df.to_csv(self.db_path + 'accsum/' + 'accsum.csv', index=False)
+        if output_path is None:
+            output_path = self.db_path + 'accsum/'
+        self.accsum_df.to_csv(output_path + 'accsum.csv', index=False)
         
     def create_mutsums_backup(self, generations, titv_ratio=2):        
 #         self.mutsum_df = pd.DataFrame(columns = ['aa_ref','aa_alt','accessibility'])        
@@ -721,14 +715,31 @@ class alm_gi:
                         all_property_aasum_df.to_csv(aasum_folder + '/' + property_aasum_name + '.csv', index=False)    
                         self.dict_sums[sum_name][property_aasum_name] = all_property_aasum_df    
     
-    def create_funsums(self, quality_cutoff):
+    def create_funsums(self, quality_cutoff, pos_importance_type = 'pos_importance_min' , pos_importance_value = 1, output_path = None):
+        if output_path is None:
+            output_path = self.db_path + 'funsum'
         sum_name = 'funsum'
         aasum_prefix = 'funsum_'
-        aasum_folder = self.db_path + 'funsum/'
+        aasum_folder = output_path
         value_df = pd.read_csv(self.funsum_dmsfiles)
-        value_df = value_df.loc[(value_df['p_vid'].isin(self.funsum_genes)) & (value_df['annotation'] == 'NONSYN'), :]  
+        print ("# of total variant effect records: " + str(value_df.shape[0]))
+        value_df = value_df.loc[(value_df['p_vid'].isin(self.funsum_genes)) & (value_df[pos_importance_type] <= pos_importance_value) & (value_df['aa_ref'] != value_df['aa_alt']), :]
+        print ("# of total variant effect records used for FunSUM: " + str(value_df.shape[0]))  
         self.create_aasum(sum_name, self.funsum_centralities, self.funsum_properties, value_df, self.funsum_scores, aasum_prefix, aasum_folder, quality_cutoff, self.funsum_weightedby_columns, self.funsum_weightedby_columns_inverse)
-           
+    
+    def create_funsums_by_mobj(self, funsum_dmsfiles, gamma_index, output_path = None):
+        if output_path is None:
+            output_path = self.db_path + 'funsum'
+        sum_name = 'funsum'
+        aasum_prefix = 'funsum_'
+        aasum_folder = output_path
+        value_df = pd.read_csv(funsum_dmsfiles)
+        print ("# of total variant effect records: " + str(value_df.shape[0]))
+        value_df = value_df.loc[gamma_index, :]
+        print ("# of total variant effect records used for FunSUM: " + str(value_df.shape[0]))
+        quality_cutoff = None  
+        self.create_aasum(sum_name, self.funsum_centralities, self.funsum_properties, value_df, self.funsum_scores, aasum_prefix, aasum_folder, quality_cutoff, self.funsum_weightedby_columns, self.funsum_weightedby_columns_inverse)
+  
     def prepare_humsavar_data(self):
         # pre_proccessing
         humsavar_snv = pd.read_table(self.db_path + 'humsavar/humsavar1.txt')
@@ -1075,11 +1086,12 @@ class alm_gi:
         
     def prepare_funregressor_training_data(self,infile,outfile):
         funregressor_training = pd.read_csv(infile)        
-        funregressor_training = funregressor_training[['p_vid', 'aa_pos', 'aa_ref', 'aa_alt','fitness_org','fitness_sd_org','fitness','fitness_se_reg','fitness_refine','fitness_se_refine','quality_score']]
-        
+        funregressor_training = funregressor_training[['p_vid', 'aa_pos', 'aa_ref', 'aa_alt','fitness_org','fitness_sd_org','fitness','fitness_prob','fitness_se_reg','fitness_refine','fitness_se_refine','quality_score']]
+
         #Add position importance
-        pos_importance_groupby = funregressor_training.groupby(['p_vid','aa_pos'] )['fitness'].median().reset_index()
-        pos_importance_groupby.columns = ['p_vid','aa_pos','pos_importance']
+        funregressor_training_importance = funregressor_training.loc[(funregressor_training['aa_ref'] != funregressor_training['aa_alt']) & (funregressor_training['aa_alt'] != '*'),:]
+        pos_importance_groupby = funregressor_training_importance.groupby(['p_vid','aa_pos'])['fitness'].agg(['min', 'max','median','mean','count','std']).reset_index()
+        pos_importance_groupby.columns = ['p_vid','aa_pos','pos_importance_min','pos_importance_max','pos_importance_median','pos_importance_mean','pos_importance_count','pos_importance_std']
         funregressor_training = pd.merge(funregressor_training,pos_importance_groupby,how = 'left')
         
         #************************************************************************************
@@ -1291,7 +1303,8 @@ class alm_gi:
 #         brac1_final_evmutation_df.loc[brac1_final_evmutation_df['evm_epistatic_score'].isnull(),evm_epistatic_score] = max_evm_score
 #         brac1_final_evmutation_df.to_csv(self.db_path + 'funregressor/brca1_test_evmutation_final.csv', index=False)
 #      
-    def prepare_funregressor_test_data_pathogenicity(self):
+    
+    def prepare_funregressor_test_data_clincial(self,outfile):
         #************************************************************************************************************************************************************************
         ##  Important Notes  ##
         #1) The CLinVar data is downloaded from 3. variant_summary.txt.gz (ftp://ftp.ncbi.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz) 
@@ -1303,10 +1316,10 @@ class alm_gi:
         self.gnomad_nt = self.gnomad_nt.loc[self.gnomad_nt['gnomad_af'] != '.',:] 
         self.gnomad_nt['chr'] = self.gnomad_nt['chr'].astype(str) 
         self.gnomad_nt['gnomad_af'] = self.gnomad_nt['gnomad_af'].astype(float)
-            
+                
         self.gnomad_nt_aa = pd.read_csv(self.db_path+'gnomad/gnomad_output_snp_aa.txt',sep = '\t')
         self.gnomad_nt_aa['chr'] = self.gnomad_nt_aa['chr'].astype(str) 
-           
+            
         #************************************************************************************************************************************************************************
         ##  Create the pathogenic postive and benign negative dataset from clinVAR
         #************************************************************************************************************************************************************************
@@ -1331,7 +1344,8 @@ class alm_gi:
         clinvar_snv.loc[clinvar_snv['review_status'] == 'practice guideline','review_star'] = 4
         clinvar_snv.loc[clinvar_snv['review_status'] == 'reviewed by expert panel','review_star'] = 3
         clinvar_snv.loc[clinvar_snv['review_status'] == 'criteria provided, multiple submitters, no conflicts','review_star'] = 2
-        clinvar_snv.loc[clinvar_snv['review_status'] == 'criteria provided, single submitter','review_star'] = 1        
+        clinvar_snv.loc[clinvar_snv['review_status'] == 'criteria provided, single submitter','review_star'] = 1    
+        clinvar_snv.loc[clinvar_snv['review_status'] == 'criteria provided, conflicting interpretations','review_star'] = 1
                        
         clinvar_snv['clinsig_level'] = 0
         clinvar_snv.loc[(clinvar_snv['clin_sig'] == 'Pathogenic'), 'clinsig_level'] = 3
@@ -1354,7 +1368,7 @@ class alm_gi:
         clinvar_snv = clinvar_snv.loc[(clinvar_snv['aa_pos_clinvar'] != -1) & (clinvar_snv['aa_ref_clinvar'] != '?') & (clinvar_snv['aa_alt_clinvar'] != '?') & (clinvar_snv['aa_alt_clinvar'] != '_') & (clinvar_snv['aa_alt_clinvar'] != '*') & (clinvar_snv['aa_ref_clinvar'] != clinvar_snv['aa_alt_clinvar']), :]
         print ('clinVAR exome missense snv records : ' + str(clinvar_snv.shape[0]))  
                           
-        # 0 reveiw star, 0 clinical significance value 
+        # remove 0 reveiw star, 0 clinical significance value 
         clinvar_snv = clinvar_snv.loc[(clinvar_snv['review_star'] > 0 ) & (clinvar_snv['clinsig_level'] >0) ,:]
         print ('clinVAR review_star > 0 , clinsig_level > 0 records : ' + str(clinvar_snv.shape[0]))
             
@@ -1362,7 +1376,7 @@ class alm_gi:
         clinvar_snv = pd.merge(clinvar_snv,self.gnomad_nt[['chr','nt_pos','nt_ref','nt_alt','gnomad_af','gnomad_gc_homo_alt']],how = 'left')
     
         #select columns for clinvar_srv
-        clinvar_srv = clinvar_snv[['chr', 'nt_pos', 'nt_ref', 'nt_alt','gnomad_gc_homo_alt','gnomad_af','clin_sig','clinsig_level','review_star','evaluate_time','data_source','label']]
+        clinvar_srv = clinvar_snv[['chr', 'nt_pos', 'nt_ref', 'nt_alt','gnomad_gc_homo_alt','gnomad_af','clin_sig','clinsig_level','review_star','evaluate_time','data_source','clinvar_id','label']]
             
         #************************************************************************************************************************************************************************
         ## Add more benign negative dataset from Gnomad (low MAF)
@@ -1372,7 +1386,10 @@ class alm_gi:
         #remove duplicated nucleotide coordinates
         gnomad_srv = gnomad_srv.drop_duplicates()
         #remove the overlap records with clinvar_snv
-        gnomad_srv = pd.merge(gnomad_srv,clinvar_snv[['chr','nt_pos','nt_ref','nt_alt','data_source']],how = 'left')
+        gnomad_srv = pd.merge(gnomad_srv,clinvar_snv[['chr','nt_pos','nt_ref','nt_alt','data_source','clin_sig','review_star','clinvar_id','label']],how = 'left')
+        #save the clinvar pathogenic varaints that appered in gnomad        
+        gnomad_srv.loc[(gnomad_srv['data_source'] == 'clinvar') & (gnomad_srv['label'] == 1),:].to_csv(self.db_path + 'clinvar/csv/clinvar_gnomad_conflict.csv', index=False)
+        
         gnomad_srv = gnomad_srv.loc[gnomad_srv['data_source'] != 'clinvar',:]
         gnomad_srv['clin_sig'] = 'Benign'
         gnomad_srv['clinsig_level'] = 3
@@ -1412,7 +1429,7 @@ class alm_gi:
         #************************************************************************************************************************************************************************
         ## Run searching dbNFSP
         #************************************************************************************************************************************************************************  
-        dbnsfp_cmd = "java " + "search_dbNSFP35a -v hg19 -i " + self.db_path + "clinvar/csv/clinvar_plus_gnomad_srv.vcf -o " + self.db_path + "clinvar/csv/clinvar_plus_gnomad_srv_.out -p"
+        dbnsfp_cmd = "java " + "search_dbNSFP35a -v hg19 -i " + self.db_path + "clinvar/csv/clinvar_plus_gnomad_srv.vcf -o " + self.db_path + "clinvar/csv/clinvar_plus_gnomad_srv.out -p"
         subprocess.run(dbnsfp_cmd.split(" "), cwd = self.db_path + "dbNSFPv3.5a")
           
         #************************************************************************************************************************************************************************
@@ -1562,13 +1579,13 @@ class alm_gi:
         #************************************************************************************
         # run variant processing
         #************************************************************************************     
-        clinvar_plus_gnomad_final_df = self.variants_process('clinvar_gnomad_dbnsfp', clinvar_gnomad_dbnsfp_srv, self.uniprot_seqdict, self.flanking_k, nt_input = 1, gnomad_available = 1, gnomad_merge_id = 'uniprot_id')                  
-        clinvar_plus_gnomad_final_df.to_csv(self.db_path + 'funregressor/funregressor_test_final.csv', index=False)  
+        clinvar_plus_gnomad_final_df = self.variants_process('clinvar_gnomad_dbnsfp', clinvar_gnomad_dbnsfp_srv, self.uniprot_seqdict, self.flanking_k, nt_input = 1, gnomad_available = 1, gnomad_merge_id = 'uniprot_id')
+        clinvar_plus_gnomad_final_df.to_csv(outfile, index=False)
+#         clinvar_plus_gnomad_final_df.to_csv(self.db_path + 'funregressor/funregressor_test_final.csv', index=False)  
 
 
         return (clinvar_plus_gnomad_final_df) 
-     
-        
+            
     def variant_process_clinvar(self):
         clinvar_gnomad_dbnsfp_srv = pd.read_csv(self.db_path + 'clinvar/csv/clinvar_gnomad_dbnsfp_srv.csv')
         self.clinvar_gnomad_dbnsfp_processed_df = self.variants_process('clinvar_gnomad_dbnsfp', clinvar_gnomad_dbnsfp_srv, self.uniprot_seqdict, self.flanking_k, gnomad_merge_id='uniprot_id')                    
@@ -1602,8 +1619,112 @@ class alm_gi:
         codonusage_species_file.close()
         codonusage_file.write(str_codonusage)
         codonusage_file.close()
-    
-    def prepare_asa_data(self):                
+        
+    def prepare_pisa_data(self): # process all downloaded xml files to indiviudal csv and one big csv
+        pisa_df = None
+        first_record = 1        
+        for file in glob.glob(self.db_path + 'pdb/org/*.xml'):
+            dms_gene_id = file[-20:-14]  
+            print (dms_gene_id)   
+            interface_molecule_file_path = self.db_path + 'pdb/org/' + dms_gene_id + '_molecule.txt'
+            interface_bond_file_path = self.db_path + 'pdb/org/' + dms_gene_id + '_bond.txt'                               
+            if (not os.path.isfile(interface_molecule_file_path)) | (not os.path.isfile(interface_bond_file_path)):            
+                interface_molecule_file = open(interface_molecule_file_path, 'w')
+                interface_bond_file = open(interface_bond_file_path, 'w')
+                with open(file) as infile:
+                    infile_str = infile.read()
+                    if len(infile_str) == 0:
+                        continue
+                    interface_tree = ET.fromstring(infile_str)
+                    for pdb_entry in interface_tree.iter('pdb_entry'):
+                        # print (pdb_entry[0].tag + ':' + pdb_entry[0].text)   #pdb_code
+                        for interface in pdb_entry.iter("interface"):
+                            # print (interface[0].tag + ':' + interface[0].text) #interface id 
+                            for h_bonds in interface.iter("h-bonds"):
+                                for bond in h_bonds.iter("bond"):
+                                    interface_bond_file.write('H\t' + str(bond[0].text) + '\t' + str(bond[1].text) + '\t' + \
+                                                                      str(bond[2].text) + '\t' + str(bond[3].text) + '\t' + \
+                                                                      str(bond[4].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n') 
+                                    interface_bond_file.write('H\t' + str(bond[5].text) + '\t' + str(bond[6].text) + '\t' + \
+                                                                      str(bond[7].text) + '\t' + str(bond[8].text) + '\t' + \
+                                                                      str(bond[9].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n') 
+                            for salt_bridges in interface.iter("salt-bridges"):
+                                for bond in salt_bridges.iter("bond"):
+                                    interface_bond_file.write('S\t' + str(bond[0].text) + '\t' + str(bond[1].text) + '\t' + \
+                                                                      str(bond[2].text) + '\t' + str(bond[3].text) + '\t' + \
+                                                                      str(bond[4].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n')
+                                    interface_bond_file.write('S\t' + str(bond[5].text) + '\t' + str(bond[6].text) + '\t' + \
+                                                                      str(bond[7].text) + '\t' + str(bond[8].text) + '\t' + \
+                                                                      str(bond[9].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n')                                   
+                            for ss_bonds in interface.iter("ss-bonds"):
+                                for bond in ss_bonds.iter("bond"):
+                                    interface_bond_file.write('D\t' + str(bond[0].text) + '\t' + str(bond[1].text) + '\t' + \
+                                                                      str(bond[2].text) + '\t' + str(bond[3].text) + '\t' + \
+                                                                      str(bond[4].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n')
+                                    interface_bond_file.write('D\t' + str(bond[5].text) + '\t' + str(bond[6].text) + '\t' + \
+                                                                      str(bond[7].text) + '\t' + str(bond[8].text) + '\t' + \
+                                                                      str(bond[9].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n')                                                  
+                            for cov_bonds in interface.iter("cov-bonds"):
+                                for bond in cov_bonds.iter("bond"):
+                                    interface_bond_file.write('C\t' + str(bond[0].text) + '\t' + str(bond[1].text) + '\t' + \
+                                                                      str(bond[2].text) + '\t' + str(bond[3].text) + '\t' + \
+                                                                      str(bond[4].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n')
+                                    interface_bond_file.write('C\t' + str(bond[5].text) + '\t' + str(bond[6].text) + '\t' + \
+                                                                      str(bond[7].text) + '\t' + str(bond[8].text) + '\t' + \
+                                                                      str(bond[9].text) + '\t' + str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\n')                                    
+                            for molecule in interface.iter("molecule"):
+                                # print(molecule[1].tag +':' + molecule[1].text) #chain_id
+                                for residue in molecule.iter("residue"):
+                                    # print (residue[0].tag + ':' + residue[0].text + '|' + residue[1].tag + ':' + residue[1].text +'|' + residue[5].tag + ':' + residue[5].text)
+                                    interface_molecule_file.write(str(pdb_entry[0].text) + '\t' + str(interface[0].text) + '\t' + str(molecule[1].text) + '\t' + str(residue[0].text) + '\t' + str(residue[1].text) + '\t' + str(residue[2].text) + '\t' + str(residue[3].text) + '\t' + str(residue[4].text) + '\t' + str(residue[5].text) + '\t' + str(residue[6].text) + '\t' + str(residue[7].text) + '\n')
+                interface_bond_file.close()                    
+                interface_molecule_file.close()
+            
+            if (os.stat(interface_bond_file_path).st_size != 0) & (os.stat(interface_molecule_file_path).st_size != 0):     
+                cur_bond_df = pd.read_csv(self.db_path + 'pdb/org/' + dms_gene_id + '_bond.txt', sep='\t', header=None, dtype={6: str})
+                cur_bond_df.columns = ['bond','CHAIN', 'residue', 'aa_pos', 'ins_code','atom','PDB','interface']                                    
+                cur_bond_df = cur_bond_df.groupby(['bond','CHAIN','residue','aa_pos','ins_code','PDB','interface'])['atom'].agg('count').reset_index()
+                cur_bond_df['h_bond']  = cur_bond_df.apply(lambda x: x['atom'] if x['bond'] == 'H' else 0, axis = 1)
+                cur_bond_df['salt_bridge']  = cur_bond_df.apply(lambda x: x['atom'] if x['bond'] == 'S' else 0, axis = 1)
+                cur_bond_df['disulfide_bond']  = cur_bond_df.apply(lambda x: x['atom'] if x['bond'] == 'D' else 0, axis = 1)
+                cur_bond_df['covelent_bond']  = cur_bond_df.apply(lambda x: x['atom'] if x['bond'] == 'C' else 0, axis = 1)                                        
+                cur_bond_df.drop(columns = ['atom','bond'],inplace = True)
+                cur_bond_df = cur_bond_df.groupby(['CHAIN','residue','aa_pos','ins_code','PDB','interface'])['h_bond','salt_bridge','disulfide_bond','covelent_bond'].agg('sum').reset_index()                
+                cur_molecule_df = pd.read_csv(self.db_path + 'pdb/org/' + dms_gene_id + '_molecule.txt', sep='\t', header=None, dtype={0: str})
+                cur_molecule_df.columns = ['PDB', 'interface', 'CHAIN', 'ser_no', 'residue', 'aa_pos', 'ins_code','bonds','asa','bsa','solv_ne']                    
+                
+                cur_molecule_df = cur_molecule_df.merge(cur_bond_df,how = 'left')
+                cur_molecule_df['bsa_ratio'] = 0
+                cur_molecule_df.loc[cur_molecule_df['asa'] !=0, 'bsa_ratio'] = cur_molecule_df.loc[cur_molecule_df['asa'] !=0, 'bsa'] / cur_molecule_df.loc[cur_molecule_df['asa'] != 0, 'asa']
+                                          
+                cur_molecule_df_groupby = cur_molecule_df.groupby(['residue', 'aa_pos'])
+                cur_pisa_value_df1 = cur_molecule_df_groupby['asa'].agg(['mean', 'std', 'count']).reset_index().sort_values(['aa_pos'])
+                cur_pisa_value_df2 = cur_molecule_df_groupby['bsa','bsa_ratio','solv_ne','h_bond','salt_bridge','disulfide_bond','covelent_bond'].agg('max').reset_index().sort_values(['aa_pos'])
+                cur_pisa_value_df3 = cur_molecule_df_groupby['solv_ne'].agg('min').reset_index().sort_values(['aa_pos'])
+                    
+                cur_pisa_value_df1.columns = ['residue', 'aa_pos', 'asa_mean', 'asa_std', 'asa_count']   
+                cur_pisa_value_df2.columns = ['residue', 'aa_pos', 'bsa_max', 'solv_ne_max','bsa_ratio_max', 'h_bond_max','salt_bridge_max','disulfide_bond_max','covelent_bond_max']
+                cur_pisa_value_df3.columns = ['residue', 'aa_pos', 'solv_ne_min']
+                
+                cur_pisa_df = cur_pisa_value_df1.merge(cur_pisa_value_df2,how = 'left')
+                cur_pisa_df = cur_pisa_df.merge(cur_pisa_value_df3,how = 'left')
+                 
+                cur_pisa_df['aa_ref'] = cur_pisa_df['residue'].apply(lambda x: self.dict_aa3_upper.get(x, np.nan))
+                cur_pisa_df = cur_pisa_df.loc[cur_pisa_df['aa_ref'].notnull(), ]
+                cur_pisa_df['p_vid'] = dms_gene_id
+                cur_pisa_df.drop(['residue'],axis = 1,inplace = True)
+                cur_pisa_df = cur_pisa_df.fillna(0)
+
+                cur_pisa_df.columns = ['aa_pos','asa_mean','asa_std','asa_count','bsa_max','solv_ne_max','bsa_ratio_max','h_bond_max','salt_bridge_max','disulfide_bond_max','covelent_bond_max','solv_ne_min','aa_ref','p_vid']    
+    #             cur_pisa_df.to_csv(self.db_path + 'pdb/dms_feature/' + dms_gene_id + '_pisa.csv', index=False)
+                if cur_pisa_df.shape[0] >0: 
+                    if first_record == 1:           
+                        cur_pisa_df.to_csv(self.db_path + 'pdb/csv/pisa_df.csv', mode = 'a',index=None)
+                        first_record = 0
+                    else:
+                        cur_pisa_df.to_csv(self.db_path + 'pdb/csv/pisa_df.csv', mode = 'a',index=None,header = None)
+                     
+    def prepare_asa_data_backup(self):                
         ####***************************************************************************************************************************************************************
         # pdb to uniprot (be aware there are cases that PDB id is 'XEXX', the pandas will read it as float
         ####***************************************************************************************************************************************************************
@@ -1764,7 +1885,6 @@ class alm_gi:
         df_ids = df_ids.sort_values('uniprot_id')
         print (df_ids)
     
-    
     def prepare_eigen_data(self):
         eigenFile = self.db_path + 'eigen/org/Eigen_hg19_coding_annot_04092016.tab'
         eigenFile_missense = self.db_path + 'eigen/csv/eigen_missense.txt'
@@ -1870,7 +1990,7 @@ class alm_gi:
         pdbss_final_df.loc[pdbss_final_df['aa_ss'] == 'C', 'aa_ss1'] = 'C'                        
         pdbss_final_df.to_csv(self.db_path + 'pdbss/pdbss_final.csv', index=False)
 
-    def prepare_psipred_data(self):
+    def prepare_psipred_region_data(self):
         psipred_path = self.db_path + 'psipred/' 
         for psipred_file in glob.glob(os.path.join(psipred_path, '*.seq')):
             cur_psipred_df = pd.read_csv(psipred_file, header=None, sep='\t')
@@ -1883,7 +2003,6 @@ class alm_gi:
                     cur_psipred_df['p_vid'] = p_vid                                       
                     cur_psipred_df.to_csv(self.db_path + 'psipred/psipred_region_df.csv', mode = 'a',index=None,header = None)
 
-
     def psipred_refseq2uniprot(self):
         psipred_path = self.db_path + 'psipred/' 
         for psipred_file in glob.glob(os.path.join(psipred_path, '*.seq')):
@@ -1895,50 +2014,45 @@ class alm_gi:
                 p_vid = self.refseq2uniprot_dict.get(refseq_vid, None)
                 if p_vid is not None:
                     cur_psipred_df.to_csv(self.db_path + 'psipred/dms_feature/' + p_vid + '_psipred.csv',index = False)
-
-
-    
-
-
-    def prepare_psipred_data_backup(self):
-        psipred_path = self.db_path + 'psipred/' 
+                    
+    def convert_refseq_psipred_to_uniprot(self):
+        psipred_path = self.db_path + 'psipred/refseq_psipred/' 
         for psipred_file in glob.glob(os.path.join(psipred_path, '*.ss2')):
             cur_psipred_df = pd.read_csv(psipred_file, skiprows=[0, 1], header=None, sep='\s+')
             cur_psipred_df = cur_psipred_df.loc[:, [0, 1, 2]]
-            cur_psipred_df.columns = ['aa_pos', 'aa_ref', 'aa_psipred']
-            
-#             #create files for secondary structure regions
-#             sc_seq = ''.join(list(cur_psipred_df['aa_psipred']))
-#             psipred_seq_file =  open(psipred_file.replace('ss2','seq'),'w')
-#             psipred_seq_str = ''
-#             sc_start = ''
-#             cur_start_pos = 1
-#             for i in range(1,len(sc_seq)+1):
-#                 cur_sc = sc_seq[i-1]
-#                 if cur_sc != sc_start:
-#                     pre_start_pos = cur_start_pos
-#                     if i != 1:
-#                         pre_end_pos = i-1
-#                         psipred_seq_str += sc_start + '\t' + str(pre_start_pos) + '\t' + str(pre_end_pos) + '\n'                                        
-#                     sc_start = cur_sc
-#                     cur_start_pos = i
-#                 if i == cur_psipred_df.shape[0]:
-#                     psipred_seq_str += sc_start + '\t' + str(cur_start_pos) + '\t' + str(i) + '\n'
-#             pass
-#             psipred_seq_file.write(psipred_seq_str)      
-#             psipred_seq_file.close()
+            cur_psipred_df.columns = ['aa_pos', 'aa_ref', 'aa_psipred'] 
+            cur_sequence_len = cur_psipred_df.shape[0]
+            psipred_vid = psipred_file[len(psipred_path):-4]
+            if 'NP' in psipred_vid:
+                uniprot_id = self.refseq2uniprot_dict.get(psipred_vid, None)      
+            if uniprot_id != None:
+                #check if the current psipred has same sequence lenth as uniprot sequence
+                if len(self.uniprot_seqdict[uniprot_id]) == cur_sequence_len:                    
+                    ss2_fh = open(psipred_path + psipred_vid + '.ss2', 'r')
+                    new_ss2_fh = open(psipred_path + uniprot_id + '.ss2','w')
+                    new_ss2_fh.write(ss2_fh.read())
+                    ss2_fh.close()
+                    new_ss2_fh.close()
+                    
+                    seq_fh = open(psipred_path + psipred_vid + '.seq', 'r')
+                    new_seq_fh = open(psipred_path + uniprot_id + '.seq','w')
+                    new_seq_fh.write(seq_fh.read())
+                    seq_fh.close()
+                    new_seq_fh.close()
 
-            # convert to uniprot id 
-            p_vid = psipred_file[len(psipred_path):-4]
-            if 'NP' in p_vid:
-                p_vid = self.refseq2uniprot_dict.get(p_vid, None)
-            if p_vid != None:
-                cur_psipred_df['p_vid'] = p_vid
+    def prepare_psipred_data(self):
+        psipred_path = self.db_path + 'psipred/uniprot_psipred/' 
+        for psipred_file in glob.glob(os.path.join(psipred_path, '*.ss2')):
+            cur_psipred_df = pd.read_csv(psipred_file, skiprows=[0, 1], header=None, sep='\s+')
+            cur_psipred_df = cur_psipred_df.loc[:, [0, 1, 2]]
+            cur_psipred_df.columns = ['aa_pos', 'aa_ref', 'aa_psipred']                         
+            uniprot_id = psipred_file[len(psipred_path):-4]                              
+            if uniprot_id != None:
+                cur_psipred_df['p_vid'] = uniprot_id                             
                 if 'psipred_df' not in locals():
                     psipred_df = cur_psipred_df
                 else:
-                    psipred_df = pd.concat([psipred_df, cur_psipred_df])
-                                       
+                    psipred_df = pd.concat([psipred_df, cur_psipred_df])                                       
         psipred_df.to_csv(self.db_path + 'psipred/psipred_df.csv', index=None)
     
     def prepare_envision_data(self):
@@ -2091,7 +2205,7 @@ class alm_gi:
             return(0)
         #assume you have the psipred output as Uniprot_ID.ss2 file
         
-        psipred_file = self.db_path + 'psipred/' + dms_gene_id + '.ss2'        
+        psipred_file = self.db_path + 'psipred/uniprot_psipred/' + dms_gene_id + '.ss2'        
         cur_psipred_df = pd.read_csv(psipred_file, skiprows=[0, 1], header=None, sep='\s+')
         cur_psipred_df = cur_psipred_df.loc[:, [0, 1, 2]]
         cur_psipred_df.columns = ['aa_pos', 'aa_ref', 'aa_psipred']
@@ -2150,8 +2264,7 @@ class alm_gi:
             retrun(1)
         except:
             return(0)
-    
-    
+        
     def retrieve_asa_by_uniprotid_dummy(self,dms_gene_id):
         return(0)
     
@@ -2161,54 +2274,30 @@ class alm_gi:
     def retrieve_psipred_by_uniprotid_dummy(self,dms_gene_id):
         return(0)
     
-    def retrieve_asa_by_uniprotid(self,dms_gene_id,dummy = 0):
+    def retrieve_pisa_by_uniprotid(self,dms_gene_id,dummy = 0):
         if dummy == 1:
             return(0)
         try:
-            asa_logFile = self.db_path + 'pdb/prepare_asa_data.log'
-            asa_url = 'http://www.ebi.ac.uk/pdbe/pisa/cgi-bin/interfaces.pisa?'
-            xml_file = open(self.db_path + 'pdb/org/' + dms_gene_id + '_asa.xml', 'w')
-            asa_file = open(self.db_path + 'pdb/org/' + dms_gene_id + '_asa.txt', 'w')            
+            pisa_logFile = self.db_path + 'pdb/prepare_pisa_data.log'
+            interface_url = 'http://www.ebi.ac.uk/pdbe/pisa/cgi-bin/interfaces.pisa?'
+#             multimers_url = 'http://www.ebi.ac.uk/pdbe/pisa/cgi-bin/multimers.pisa?'             
+            interface_xml_file = open(self.db_path + 'pdb/org/' + dms_gene_id + '_interface.xml', 'w')
+#             multimers_xml_file = open(self.db_path + 'pdb/org/' + dms_gene_id + '_multimers.xml', 'w')
+#             multimers_asa_file = open(self.db_path + 'pdb/org/' + dms_gene_id + '_multimers.txt', 'w')                         
             cur_gene_pdb = self.pdb_to_uniprot.loc[self.pdb_to_uniprot['SP_PRIMARY'] == dms_gene_id, :]
-            if cur_gene_pdb.shape[0] > 0 :   
-    #             try:     
-                    pdb_lst = ','.join(cur_gene_pdb['PDB'].unique())
-                    cur_asa_url = asa_url + pdb_lst
-                    response = urllib.request.urlopen(cur_asa_url)
-                    r = response.read().decode('utf-8')
-                    xml_file.write(r)
-                    tree = ET.fromstring(r)
-                    for pdb_entry in tree.iter('pdb_entry'):
-                        # print (pdb_entry[0].tag + ':' + pdb_entry[0].text)   #pdb_code
-                        for interface in pdb_entry.iter("interface"):
-                            # print (interface[0].tag + ':' + interface[0].text) #interface id 
-                            for molecule in interface.iter("molecule"):
-                                # print(molecule[1].tag +':' + molecule[1].text) #chain_id
-                                for residue in molecule.iter("residue"):
-                                    # print (residue[0].tag + ':' + residue[0].text + '|' + residue[1].tag + ':' + residue[1].text +'|' + residue[5].tag + ':' + residue[5].text)
-                                    asa_file.write(pdb_entry[0].text + '\t' + interface[0].text + '\t' + molecule[1].text + '\t' + residue[0].text + '\t' + residue[1].text + '\t' + residue[2].text + '\t' + residue[5].text + '\n')
-                    show_msg(asa_logFile, 1, dms_gene_id + ' pisa is processed.\n')                                        
-                    asa_file.close() 
-                    xml_file.close()  
-                 
-                    cur_asa_df = pd.read_csv(self.db_path + 'pdb/org/' + dms_gene_id + '_asa.txt', sep='\t', header=None, dtype={0: str})
-                    cur_asa_df.columns = ['PDB', 'interface', 'CHAIN', 'ser_no', 'residue', 'aa_pos', 'asa']                        
-                    cur_asa_df_groupby = cur_asa_df.groupby(['residue', 'aa_pos'])
-                    cur_asa_df = cur_asa_df_groupby.agg({'asa':['mean', 'std', 'count']}).reset_index().sort_values(['aa_pos'])
-                    cur_asa_df.columns = ['residue', 'aa_pos', 'asa_mean', 'asa_std', 'asa_count']    
-                    cur_asa_df['aa_ref'] = cur_asa_df['residue'].apply(lambda x: self.dict_aa3_upper.get(x, np.nan))
-                    cur_asa_df = cur_asa_df.loc[cur_asa_df['aa_ref'].notnull(), ]
-                    cur_asa_df['p_vid'] = dms_gene_id
-                    cur_asa_df.drop(['residue'],axis = 1,inplace = True)
-                    cur_asa_df[['aa_pos','aa_ref','asa_mean','asa_std','asa_count','p_vid']].to_csv(self.db_path + 'pdb/dms_feature/' + dms_gene_id + '_asa.csv', index=False)
-                    show_msg(asa_logFile, 1, dms_gene_id + ' asa file is saved to csv.\n')
+            if cur_gene_pdb.shape[0] > 0 :     
+                    pdb_lst = ','.join(cur_gene_pdb['PDB'].unique())                                                                                
+                    cur_interface_url = interface_url + pdb_lst
+                    response = urllib.request.urlopen(cur_interface_url) 
+                    interface_r = response.read().decode('utf-8')
+                    interface_xml_file.write(interface_r)
+                    interface_xml_file.close()
+                    show_msg(pisa_logFile, 1, dms_gene_id + ' pisa file is downloaded.\n')
                     return(1)
-    #             except:
-    #                 show_msg(asa_logFile, 1, dms_gene_id + ' process error: ' + traceback.format_exc() + '\n')
-    #                 return(0)
             else:
                 return(0)    
         except:
+            show_msg(pisa_logFile, 1, dms_gene_id + traceback.format_exc() + '\n')            
             return(0) 
         
     def prepare_dms_input(self,dms_gene_id,syn_ratio = 0.6,stop_ratio = 0.6,missense_ratio = 0.6):
@@ -2836,7 +2925,7 @@ class alm_gi:
             dms_gene_df.to_csv(self.db_path + 'dms/' + dms_gene + '_data.csv')
         return (dms_gene_df)
         
-    def plot_aa_matrix(self, matrix_df, value_column, value_ste_column, value_name, lst_aa=['I', 'L', 'V', 'M', 'F', 'W', 'H', 'K', 'T', 'A', 'G', 'P', 'Y', 'D', 'E', 'R', 'S', 'C', 'N', 'Q'] , aa_colors=['r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'], vmin=np.nan, vmax=np.nan, vcenter=np.nan, annotation=False, show_ste=0, nonsyn_only=True):                
+    def plot_aa_matrix(self, matrix_df, value_column, value_ste_column, value_name, lst_aa=['I', 'L', 'V', 'M', 'F', 'W', 'H', 'K', 'T', 'A', 'G', 'P', 'Y', 'D', 'E', 'R', 'S', 'C', 'N', 'Q'] , aa_colors=['r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'], vmin=np.nan, vmax=np.nan, vcenter=np.nan, annotation=False, show_ste=0, nonsyn_only=True, color_palette = 'Blues'):                
         lst_aa_reverse = list(reversed(np.array(lst_aa)))
         value_matrix = pd.DataFrame(np.zeros([len(lst_aa), len(lst_aa)]), columns=lst_aa, index=lst_aa_reverse)
         value_matrix[value_matrix == 0] = np.nan
@@ -2858,9 +2947,9 @@ class alm_gi:
                 value_ste_matrix.loc[cur_aa_ref, cur_aa_alt] = matrix_df.loc[i, value_ste_column]
               
         if math.isnan(vmin) | math.isnan(vmax):    
-            ax = sns.heatmap(value_matrix, annot=annotation, fmt='.2g', annot_kws={"size": 8}, cmap='Blues')  # previously RdBu_r
+            ax = sns.heatmap(value_matrix, annot=annotation, fmt='.2g', annot_kws={"size": 8}, cmap= color_palette)  # previously RdBu_r
         else:
-            ax = sns.heatmap(value_matrix, annot=annotation, fmt='.2g', annot_kws={"size": 8}, vmax=vmax, vmin=vmin, center=vcenter, cmap='Blues_r')
+            ax = sns.heatmap(value_matrix, annot=annotation, fmt='.2g', annot_kws={"size": 8}, vmax=vmax, vmin=vmin, center=vcenter, cmap = color_palette)
         ax.set_title(value_name, size=25)
         for xtick, color in zip(ax.get_xticklabels(), aa_colors):
             xtick.set_color(color)
@@ -2895,7 +2984,7 @@ class alm_gi:
         ax.set_xlabel(value_name)
         ax.set_title(self.dict_aaname[aa_ref] + ' to ' + self.dict_aaname[aa_alt] + ' ' + value_name + ' Distribution', size=14)
     
-    def plot_aasum(self, aasum_columnname, aasum_name, aasum_df, filter_columnname='', filter_value='', lst_aa=['I', 'L', 'V', 'M', 'F', 'W', 'H', 'K', 'T', 'A', 'G', 'P', 'Y', 'D', 'E', 'R', 'S', 'C', 'N', 'Q'] , colors_aa=['r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'], vmin=np.nan, vmax=np.nan, annotation=True):
+    def plot_aasum(self, aasum_columnname, aasum_name, aasum_df, filter_columnname='', filter_value='', lst_aa=['I', 'L', 'V', 'M', 'F', 'W', 'H', 'K', 'T', 'A', 'G', 'P', 'Y', 'D', 'E', 'R', 'S', 'C', 'N', 'Q'] , colors_aa=['r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'], vmin=np.nan, vmax=np.nan, annotation=True,output_path = None,color_palette = 'Blues'):
         if filter_columnname == '':
             aasum_df = aasum_df.loc[(aasum_df.aa_ref.isin(self.lst_aa)) & (aasum_df.aa_alt.isin(self.lst_aa)), :]
         else:
@@ -2904,10 +2993,12 @@ class alm_gi:
         fig = plt.figure(figsize=(7, 5))
         plt.clf()            
         ax = plt.subplot()
-        self.plot_aa_matrix(aasum_df, aasum_columnname, aasum_columnname + '_ste', aasum_name, lst_aa, colors_aa, vmin, vmax, annotation)
+        self.plot_aa_matrix(aasum_df, aasum_columnname, aasum_columnname + '_ste', aasum_name, lst_aa, colors_aa, vmin, vmax, annotation = annotation,color_palette = color_palette)
         
         fig.tight_layout()
-        plt.savefig(self.db_path + 'output/aasum_' + aasum_columnname + '.png')     
+        if output_path is None:
+            output_path = self.db_path + 'output/'
+        plt.savefig(output_path+ aasum_columnname + '.png')     
                
     def plot_aasum_backup(self, aasum_columnname, aasum_name, aasum_file, filter_columnname='', filter_value='', lst_aa=['I', 'L', 'V', 'M', 'F', 'W', 'H', 'K', 'T', 'A', 'G', 'P', 'Y', 'D', 'E', 'R', 'S', 'C', 'N', 'Q'] , colors_aa=['r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'r', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g', 'g'], vmin=np.nan, vmax=np.nan, annotation=True):
         aasum_df = pd.read_csv(self.db_path + aasum_file)
@@ -3201,7 +3292,14 @@ class alm_gi:
         np.save(self.db_path + 'uniprot/npy/dict_uniprot_ac2gname.npy', dict_uniprot_ac2gname)
         np.save(self.db_path + 'uniprot/npy/dict_uniprot_ac2gname_gsyn.npy', dict_uniprot_ac2gname_gsyn)                    
         return [uniprot_df, dict_uniprot_ac2seq, dict_uniprot_gene2ac, dict_uniprot_ac2gname_gsyn]
-        
+    
+    def generate_uniprot_fasta(self, id_lst, fasta_name = 'new_fasta'):
+        outfile = open(self.db_path + 'uniprot/fasta/' + fasta_name + '.fasta', 'w')
+        for uniprot_id in id_lst:
+            outfile.write(">" + uniprot_id + "\n")            
+            outfile.write(self.uniprot_seqdict[uniprot_id] + "\n") 
+        outfile.close()  
+            
     def generate_uniprot_individual_fasta(self):
         for uniprot_id in self.uniprot_seqdict:
             outfile = open(self.db_path + 'uniprot/fasta/' + uniprot_id + '.fasta', 'w')
@@ -3283,8 +3381,7 @@ class alm_gi:
         id_maps[['UniProtKB-AC', target_id]].apply(lambda x: fill_target2uniprot_dict(x[target_id], x['UniProtKB-AC']), axis=1)
         id_maps[['UniProtKB-AC', target_id]].apply(lambda x: fill_uniprot2target_dict(x[target_id], x['UniProtKB-AC']), axis=1)
         return ([target2uniprot_dict,uniprot2target_dict])
-    
-    
+       
     def get_ucsc_idmapping(self):
 #         http://hgdownload.soe.ucsc.edu/goldenPath/proteinDB/proteins140122/database/hgnc.txt.gz
 #         http://hgdownload.soe.ucsc.edu/goldenPath/proteinDB/proteins140122/database/tableDescriptions.txt.gz
@@ -3306,8 +3403,7 @@ class alm_gi:
         
         np.save(self.db_path + 'ucsc/npy/ucsc2uniprot_dict.npy',target2uniprot_dict)
         return (target2uniprot_dict)
-       
-       
+          
     def get_refseq_idmapping1(self):
            
         def process_idmap(refseq_vid, uniprot_id):
@@ -3320,6 +3416,7 @@ class alm_gi:
         refseq2uniprot_dict = {}
         uniprot_mapping = pd.read_table(self.db_path + 'uniprot/org/HUMAN_9606_idmapping_selected.tab', sep='\t', header = None) 
         uniprot_mapping.columns = ['UniProtKB-AC','UniProtKB-ID','EntrezGene','RefSeq','GI','PDB','GO','UniRef100','UniRef90','UniRef50','UniParc','PIR','NCBI-taxon','MIM','UniGene','PubMed','EMBL','EMBL-CDS','Ensembl','Ensembl_TRS','Ensembl_PRO','PubMed']
+        uniprot_mapping = uniprot_mapping.loc[uniprot_mapping['UniProtKB-AC'].isin(self.uniprot_reviewed_ids),:] #only reviewed IDs        
         uniprot_mapping = uniprot_mapping.loc[uniprot_mapping['RefSeq'].notnull(),:]
         uniprot_mapping.apply(lambda x: process_idmap(x['RefSeq'], x['UniProtKB-AC']), axis=1)
           
@@ -3609,10 +3706,7 @@ class alm_gi:
                     vcfheader += line + '\n'
         with open(gnomFile_output1, "a") as f:
             f.write(newline)
-        
-#         with open(vcfheaderFile_output,"a") as f:
-#             f.write(vcfheader)       
-
+   
     def find_gnomad_record(self, rs_id):
         count = 0
         gnomFile = self.db_path + 'gnomad/gnomad.exomes.r2.0.2.sites.vcf'
@@ -3846,11 +3940,7 @@ class alm_gi:
         clinvar_snv['p_vid'] = clinvar_snv['uniprot_id']       
         clinvar_ids = clinvar_snv['p_vid'].unique()                   
         clinvar_snv.to_csv(self.db_path + 'clinvar/csv/clinvar_snv.csv', index=False)
- 
-
-        
-        
-
+    
     def update_ftp_files(self):
         ####***************************************************************************************************************************************************************
         # NCBI FTP
@@ -4103,12 +4193,14 @@ class alm_gi:
         aa_properties.columns = aa_properties_features    
         return (aa_properties)
     
-    def get_blosums(self):
+    def get_blosums(self,blosum_rawdata_path = None):
+        if blosum_rawdata_path is None:
+            blosum_rawdata_path = self.db_path + 'blosum/'
         df_blosums = None
         dict_blosums = {} 
         blosums = ['blosum30', 'blosum35', 'blosum40', 'blosum45', 'blosum50', 'blosum55', 'blosum60', 'blosum62', 'blosum65', 'blosum70', 'blosum75', 'blosum80', 'blosum85', 'blosum90', 'blosum95', 'blosum100']
         for blosum in blosums:
-            blosum_raw = pd.read_table(self.db_path + "blosum/new_" + blosum + ".sij", sep='\t')
+            blosum_raw = pd.read_table(blosum_rawdata_path + "new_" + blosum + ".sij", sep='\t')
             col_names = blosum_raw.columns.get_values()
             b = blosum_raw.replace(' ', 0).astype('float') 
             bv = b.values + b.transpose().values
@@ -4181,6 +4273,101 @@ class alm_gi:
         allsums = allsums.loc[allsum_ind, :]
         return (stats.spearmanr(allsums[value1], allsums[value2])[0])               
 
+    def get_aa_index(self):
+#         aa_index1_df = pd.DataFrame()
+#         aa_index1_desc = pd.DataFrame()
+#         aa_index1_df['aa_ref'] = ['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V']
+#         line_num = 0
+#         cur_value_line_num = np.nan
+#         with open(self.db_path + 'aaindex/org/aaindex1','r') as f: 
+#             for line in f:
+#                 line_num += 1
+#                 line = line.rstrip("\n\r")
+#                 if re.match('H',line):
+#                     cur_id = line[2:]
+#                 if re.match('D',line):
+#                     cur_desc = line[2:] 
+#                 if re.match('R',line):
+#                     cur_pmid = line[2:]
+#                 if re.match('I',line):
+#                     cur_value_line_num = line_num
+#                 if line_num == cur_value_line_num + 1:
+#                     aa_lst_1 = line.lstrip().split(' ')
+#                     aa_lst_1 = list(filter(lambda a: a != '', aa_lst_1))
+#                 if line_num == cur_value_line_num + 2:
+#                     aa_lst_2 = line.lstrip().split(' ')
+#                     aa_lst_2 = list(filter(lambda a: a != '', aa_lst_2))
+#                     print (cur_id)
+#                     aa_index1_df[cur_id] = aa_lst_1 + aa_lst_2
+#                     aa_index1_desc[cur_id] = [cur_id,cur_desc,cur_pmid]
+#         
+#         aa_index1_desc = aa_index1_desc.transpose()
+#         aa_index1_desc.columns = ['aaindex_id','desc','pmid']
+#         
+#         aa_index1_df.to_csv(self.db_path + 'aaindex/csv/aa_index1_df.csv',index = False)
+#         aa_index1_desc.to_csv(self.db_path + 'aaindex/csv/aa_index1_desc.csv',index = False)
+        
+        line_num = 0
+        cur_value_line_num = np.nan       
+        aa_index2_df = pd.DataFrame(np.zeros([21,21]))
+        aa_index2_df.index = self.lst_aa_20 + ['_']
+        aa_index2_df.columns = self.lst_aa_20 + ['_']
+        aa_index2_df['aa_ref'] = self.lst_aa_20 + ['_']
+        aa_index2_df = aa_index2_df.melt('aa_ref')
+        aa_index2_df.drop(columns = {'value'},axis = 1,inplace = True)
+        aa_index2_df.columns = ['aa_ref','aa_alt']
+        aa_index2_desc = pd.DataFrame()
+
+        with open(self.db_path + 'aaindex/org/aaindex2&3','r') as f: 
+            for line in f:
+                line_num += 1
+                line = line.rstrip("\n\r")
+                if re.match('H',line):
+                    cur_id = line[2:]
+                if re.match('D',line):
+                    cur_desc = line[2:] 
+                if re.match('R',line):
+                    cur_pmid = line[2:]
+                if re.match('M',line):
+                    cur_rows = list(line.split(',')[0].split('=')[1].lstrip())
+                    cur_cols = list(line.split(',')[1].split('=')[1].lstrip())                    
+                    cur_matrix = np.empty([len(cur_rows),len(cur_cols)])                    
+#                     cur_matrix_df = pd.DataFrame(np.zeros([len(cur_rows),len(cur_cols)]))
+                    cur_value_line_num = line_num  
+                    print (cur_id)                  
+                if line_num > cur_value_line_num:
+                    if not re.match('//',line):
+                        cur_row_indx = line_num - cur_value_line_num -1
+                        cur_row_values = line.lstrip().split(' ')
+                        cur_row_values = list(filter(lambda a: a != '', cur_row_values))
+                        cur_row_values = [x if x != '-' else np.nan for x in cur_row_values]
+                        cur_row_values = [x if x != 'NA' else np.nan for x in cur_row_values]
+                        cur_row_values = cur_row_values + [np.nan]*(len(cur_cols)-len(cur_row_values))     
+                        cur_matrix[cur_row_indx,:] = cur_row_values                                       
+#                         cur_matrix_df.loc[cur_row_indx,:] = cur_row_values
+                    else:                             
+                        if np.isnan(cur_matrix).sum() >= 190:
+                            for i in range(np.shape(cur_matrix)[0]):
+                                for j in range(i, np.shape(cur_matrix)[1]):
+                                    cur_matrix[i][j] = cur_matrix[j][i]
+                        
+                        cur_matrix_df = pd.DataFrame(cur_matrix)             
+                        cur_matrix_df.columns =  cur_cols
+                        cur_matrix_df['aa_alt'] = cur_rows
+                        cur_matrix_df = cur_matrix_df.melt('aa_alt')
+                        cur_matrix_df.columns = ['aa_alt','aa_ref',cur_id]
+                        aa_index2_df = aa_index2_df.merge(cur_matrix_df,how = 'left')
+                        cur_value_line_num = np.nan
+                        aa_index2_desc[cur_id] = [cur_id,cur_desc,cur_pmid]
+        
+        aa_index2_desc = aa_index2_desc.transpose()
+        aa_index2_desc.columns = ['aaindex_id','desc','pmid']
+         
+        aa_index2_df.to_csv(self.db_path + 'aaindex/csv/aa_index2_df.csv',index = False)
+        aa_index2_desc.to_csv(self.db_path + 'aaindex/csv/aa_index2_desc.csv',index = False)
+
+
+
     def obj_ftp(self, ftp_site):   
         cur_ftp = FTP(ftp_site)
         cur_ftp.login()
@@ -4218,8 +4405,7 @@ class alm_gi:
             # merge with gnomad
             vcf_df1 = pd.merge(vcf_df, self.gnomad_nt, how='left')
         return (vcf_df1)
-    
-     
+       
     def variants_process(self, gene_id, variants_df, seq_dict, k, nt_input, gnomad_available, gnomad_merge_id):
         total_stime = time.time()  
         print ("variants processing for : [" + str(gene_id) + "]")
@@ -4229,15 +4415,24 @@ class alm_gi:
 #         variants_df['chr'] = variants_df['chr'].astype(str)        
         varaints_df = variants_df.drop_duplicates()
                   
+#         ####***************************************************************************************************************************************************************
+#         #### merge with the asa (accessible solvent area)
+#         ####***************************************************************************************************************************************************************  
+#         stime = time.time() 
+#         self.pdb_asa = pd.read_csv(self.db_path + 'pdb/csv/asa_df.csv', header=None)
+#         self.pdb_asa.columns = ['aa_pos', 'aa_ref', 'asa_mean', 'asa_std', 'asa_count', 'p_vid']                    
+#         variants_df = pd.merge(variants_df, self.pdb_asa, how='left') 
+#         etime = time.time() 
+#         print ("merge with pdb asa: " + str(variants_df.shape[0]) + " took %g seconds\n" % (etime - stime))
+#     
         ####***************************************************************************************************************************************************************
-        #### merge with the asa (accessible solvent area)
-        ####***************************************************************************************************************************************************************  
+        #### merge with the pisa (including accessible solvent area)
+        ####***************************************************************************************************************************************************************
         stime = time.time() 
-        self.pdb_asa = pd.read_csv(self.db_path + 'pdb/csv/asa_df.csv', header=None)
-        self.pdb_asa.columns = ['aa_pos', 'aa_ref', 'asa_mean', 'asa_std', 'asa_count', 'p_vid']                    
-        variants_df = pd.merge(variants_df, self.pdb_asa, how='left') 
+        self.pisa_df = pd.read_csv(self.db_path + 'pdb/csv/pisa_df.csv')   
+        variants_df = pd.merge(variants_df, self.pisa_df, how='left') 
         etime = time.time() 
-        print ("merge with pdb asa: " + str(variants_df.shape[0]) + " took %g seconds\n" % (etime - stime))
+        print ("merge with pdb pisa: " + str(variants_df.shape[0]) + " took %g seconds\n" % (etime - stime))
     
         ####***************************************************************************************************************************************************************
         #### merge with the pdb secondary structure
@@ -4307,9 +4502,11 @@ class alm_gi:
                 gnomad_nt = pd.read_csv(self.db_path+'gnomad/gnomad_output_snp_nt.txt',sep = '\t',dtype={"chr": str})
                 variants_df = pd.merge(variants_df, self.gnomad_nt, how='left')
             else: 
-                gnomad_aa = pd.read_csv(self.db_path+'gnomad/gnomad_output_snp_aa.txt',sep = '\t')
+#                 gnomad_aa = pd.read_csv(self.db_path+'gnomad/gnomad_output_snp_aa.txt',sep = '\t')
+                gnomad_aa = pd.read_csv(self.db_path+'gnomad/gnomad_output_snp_aa_uniprot.txt',sep = '\t')
                 gnomad_aa.rename(columns={gnomad_merge_id: 'p_vid'}, inplace=True)
-                variants_df = pd.merge(variants_df, gnomad_aa, how='left') 
+                gnomad_aa['aa_pos'] = gnomad_aa['aa_pos'].astype(int)
+                variants_df = pd.merge(variants_df, gnomad_aa, how='left')             
             etime = time.time()         
             print ("merge with gnomad: " + str(variants_df.shape[0]) + " took %g seconds\n" % (etime - stime))     
                 

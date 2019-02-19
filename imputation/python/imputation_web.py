@@ -46,7 +46,8 @@ def run_imputation(run_mode, arguments):
         imputation_web_log.write('\n' + str(datetime.now()) + '\n') 
         imputation_web_log.write('queryflag: ' + str(queryflag) + '\n') 
         if session_id is not None:
-            imputation_web_session_log = open(www_log_path + session_id + '.log', 'a')  
+            imputation_web_session_log_file = www_log_path + session_id + '.log'
+            imputation_web_session_log = open(imputation_web_session_log_file, 'a')  
             imputation_web_session_log.write('\n' + str(datetime.now()) + '\n') 
             imputation_web_session_log.write('queryflag: ' + str(queryflag) + '\n')
 
@@ -230,8 +231,7 @@ def run_imputation(run_mode, arguments):
             imputation_web_session_log.close()
         JSON_Return = str(callback) + '([{"error":"Imputation Error! Please check your inputs or leave your email address on the box below, we will notify you once the problem is found."}])'
         return (JSON_Return)
-      
-     
+          
 def create_imputation_instance(arguments,imputation_web_session_log):     
     protein_id = arguments['proteinid']
     session_id = arguments.get('sessionid','')
@@ -331,6 +331,7 @@ def create_imputation_instance(arguments,imputation_web_session_log):
     data_params['save_to_disk'] = 1
     data_params['cur_test_split_fold'] = 0
     data_params['cur_gradient_key'] = 'no_gradient'
+    data_params['innerloop_cv_fit_once'] = 0
 
     data_params['onehot_features'] = []
     data_params['cv_fitonce'] = 0

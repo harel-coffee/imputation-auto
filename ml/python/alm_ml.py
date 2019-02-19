@@ -4,49 +4,15 @@ import pandas as pd
 import csv
 import os
 import re
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import seaborn as sns
-import matplotlib.pyplot as plt 
-import matplotlib.path as mpath
-import matplotlib.patches as patches  
-from matplotlib.lines import Line2D  
-from matplotlib.gridspec import GridSpec
-import matplotlib.collections as collections
-
 import operator
 import itertools
 import time
 import math
 import random
 import codecs
-import pydotplus 
 import copy
 import pickle
-
-# sklearn
-import tensorflow as tf
-from sklearn import linear_model as lm
-from sklearn import svm
-from sklearn import feature_selection as fs
-from sklearn import model_selection as ms
-from sklearn import ensemble as es
-from sklearn import tree
-from sklearn import pipeline
-from sklearn import preprocessing
-from sklearn import metrics
-from sklearn.metrics.ranking import roc_auc_score
- 
-from scipy import stats 
-from functools import partial
 from datetime import datetime
-from numpy import inf
-from cgi import log
-from decimal import *
-from collections import Counter
-sns.set(rc={'axes.facecolor':'#C0C0C0'}) 
 
 import alm_fun
                
@@ -124,7 +90,7 @@ class alm_ml:
      
             return (result_dict)
 
-    def run_test_prediction(self, alm_estimator,alm_dataset,features=None):        
+    def run_test_prediction(self, alm_estimator,alm_dataset,features=None,nofit = 0):        
         if features == None:
             features = alm_dataset.train_features 
             
@@ -154,7 +120,7 @@ class alm_ml:
                 cur_test_df_bs = cur_test_df.loc[bs_idx[i, :], :]       
                 cur_test_df_bs.to_csv('/Users/joewu/test_bs.csv')
                  
-                r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df_bs, alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data)
+                r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df_bs, alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data,nofit)
         
                 if 'test_bs_results' not in locals():
                     test_bs_results = r['test_score_df']   
@@ -173,7 +139,7 @@ class alm_ml:
             test_y_predicted = r['test_y_predicted']
             feature_importance = r['feature_importance']            
         else:             
-            r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df ,alm_dataset.extra_train_data_df, alm_dataset.use_extra_train_data)            
+            r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_test_df ,alm_dataset.extra_train_data_df, alm_dataset.use_extra_train_data,nofit)            
             test_y_predicted = r['test_y_predicted']
             feature_importance = r['feature_importance']   
             
@@ -194,7 +160,7 @@ class alm_ml:
         result_dict['test_bs_score'] = test_bs_score
         return (result_dict)
     
-    def run_target_prediction(self, alm_estimator, alm_dataset, features=None):        
+    def run_target_prediction(self, alm_estimator, alm_dataset, features=None,nofit = 0):        
         if features == None:
             features = alm_dataset.train_features 
             
@@ -205,7 +171,7 @@ class alm_ml:
             cur_train_df = alm_dataset.train_data_index_df.loc[alm_dataset.train_data_for_target_df[alm_dataset.cur_gradient_key],:]
             cur_target_df = alm_dataset.target_data_index_df.loc[alm_dataset.target_data_for_target_df[alm_dataset.cur_gradient_key],:]
              
-        r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_target_df, alm_dataset.extra_train_data_df, alm_dataset.use_extra_train_data)  
+        r = alm_estimator.run(features, alm_dataset.dependent_variable, alm_estimator.ml_type, cur_train_df, cur_target_df, alm_dataset.extra_train_data_df, alm_dataset.use_extra_train_data,nofit)  
         alm_dataset.predicted_target_df = r['predicted_df']    
         target_results = r['test_score_df']
         target_result_mean = round(target_results.mean(axis=0), alm_estimator.round_digits)
@@ -225,7 +191,7 @@ class alm_ml:
 
         return (result_dict)
     
-    def run_cv_prediction(self,alm_estimator,alm_dataset,features=None):
+    def run_cv_prediction(self,alm_estimator,alm_dataset,features=None,nofit = 0):
         if features == None:
             features = alm_dataset.train_features  
                             
@@ -236,9 +202,8 @@ class alm_ml:
             else:
                 cur_train_cv_df = alm_dataset.train_data_index_df.loc[alm_dataset.train_cv_splits_df[alm_dataset.cur_test_split_fold][i][alm_dataset.cur_gradient_key],:]
                 cur_validation_cv_df = alm_dataset.validation_data_index_df.loc[alm_dataset.validation_cv_splits_df[alm_dataset.cur_test_split_fold][i][alm_dataset.cur_gradient_key],:]
-            
-            
-            if ((alm_dataset.cv_fitonce == 1) & (i != 0 )):
+                        
+            if ((alm_dataset.innerloop_cv_fit_once == 1) & (i != 0 ) | (nofit == 1)):
                 r = alm_estimator.run(features, alm_dataset.dependent_variable , alm_estimator.ml_type, cur_train_cv_df, cur_validation_cv_df,alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data,nofit =1)            
             else:    
                 r = alm_estimator.run(features, alm_dataset.dependent_variable , alm_estimator.ml_type, cur_train_cv_df, cur_validation_cv_df,alm_dataset.extra_train_data_df,alm_dataset.use_extra_train_data)
@@ -635,13 +600,13 @@ class alm_ml:
             start_score = inf
             all_feature_states = [1] * len(start_features) + [0] * len(left_features)  # track the state of each feature  
             all_features = start_features + left_features
-            self.fs_results = pd.DataFrame(columns=['T', 'k', 'sign', 'feature', 'features', 'score', 'delta_score', 'prob', 'accept', 'successive_rejection'])
+            self.fs_results = pd.DataFrame(columns=['T', 'k', 'sign', 'feature', 'features', 'score', 'delta_score','validation_score','prob', 'accept', 'successive_rejection','successive_noincrease'])
             T = args['T']
             alpha = args['alpha']
             K = args['K']
             epsilon = args['epsilon']
             k = K
-            self.ls(alm_estimator, alm_dataset, start_features, start_score, all_features, all_feature_states, T, alpha, K, k, epsilon, 0)            
+            self.ls(alm_estimator, alm_dataset, start_features, start_score, all_features, all_feature_states, T, alpha, K, k, epsilon, 0,0)            
         return (self.fs_results)
      
     def bs(self, alm_estimator, alm_dataset, start_features, start_score, bs_df):     
@@ -695,12 +660,13 @@ class alm_ml:
          
     # local search feature selection    
      
-    def ls(self, alm_estimator, alm_dataset, start_features, start_score, all_features, all_feature_states, T, alpha, K, k, epsilon, successive_rejection_count):        
+    def ls(self, alm_estimator, alm_dataset, start_features, start_score, all_features, all_feature_states, T, alpha, K, k, epsilon, successive_rejection_count,successive_noincrease_count):        
         k -= 1                      
         if start_score == inf:  # this is first time run 
             if len(start_features) != 0:
                 alm_dataset.train_features = start_features
-                cur_score = self.run_cv_prediction(alm_estimator, alm_dataset)['validation_cv_score']
+                cv_results = self.run_cv_prediction(alm_estimator, alm_dataset)
+                cur_score = cv_results['train_cv_score']  
                 msg = "[feature selection] Local search: start from feature (" + str(start_features) + "), score: " + str(cur_score)
                 start_score = cur_score 
                 alm_fun.show_msg(self.log, self.verbose, msg)
@@ -721,11 +687,19 @@ class alm_ml:
             start_features.remove(selected_feature)
         if len(start_features) != 0:
             alm_dataset.train_features = start_features
-            cur_score = self.run_cv_prediction(alm_estimator, alm_dataset)['validation_cv_score']      
+            cv_results = self.run_cv_prediction(alm_estimator, alm_dataset)
+            cur_score = cv_results['train_cv_score']    
+            cur_validation_score = cv_results['validation_cv_score']  
             if (alm_estimator.score_direction == 0):            
                 delta_score = start_score - cur_score
             if (alm_estimator.score_direction == 1):            
                 delta_score = cur_score - start_score 
+            
+            if delta_score > 0 :   
+                successive_noincrease_count = 0
+            else:
+                successive_noincrease_count += 1
+                
             prob = np.exp(delta_score / T)
             if prob > 1: 
                 prob = 1
@@ -733,26 +707,26 @@ class alm_ml:
                 # accept the selected feature
                 successive_rejection_count = 0        
                 all_feature_states[selected_idx] = 1 - all_feature_states[selected_idx]
-                self.fs_results.loc[self.fs_results.shape[0]] = [T, k, sign, selected_feature, start_features.copy(), cur_score, delta_score, prob, "Yes", successive_rejection_count]
+                self.fs_results.loc[self.fs_results.shape[0]] = [T, k, sign, selected_feature, start_features.copy(), cur_score, delta_score, cur_validation_score,prob, "Yes", successive_rejection_count,successive_noincrease_count]
 #                 self.fs_results = self.fs_results.append(pd.Series([T,k,sign,selected_feature,start_features,cur_score,delta_score,prob,"Yes",successive_rejection_count],index = self.fs_results.columns),ignore_index = True)
-                msg = "[feature selection] Local search: Accept " + sign + " feature (" + selected_feature + ") with probability " + str(prob) + ", score: " + str(cur_score) + ", delta_score: " + str(delta_score) + ", T: " + str(T) + ", k: " + str(k)
+                msg = "[feature selection] Local search: Accept " + sign + " feature (" + selected_feature + ") with probability " + str(prob) + ", score: " + str(cur_score) + ", delta score: " + str(delta_score) + ", validation_score: " + str(cur_validation_score) + ", T: " + str(T) + ", k: " + str(k)
                 alm_fun.show_msg(self.log, self.verbose, msg)       
                 start_score = cur_score        
             else:
                 successive_rejection_count += 1 
-                self.fs_results.loc[self.fs_results.shape[0]] = [T, k, sign, selected_feature, start_features.copy(), cur_score, delta_score, prob, "No", successive_rejection_count]   
+                self.fs_results.loc[self.fs_results.shape[0]] = [T, k, sign, selected_feature, start_features.copy(), cur_score, delta_score, cur_validation_score, prob, "No", successive_rejection_count,successive_noincrease_count]   
 #                 self.fs_results = self.fs_results.append(pd.Series([T,k,sign,selected_feature,start_features,cur_score,delta_score,prob,"No",successive_rejection_count],index = self.fs_results.columns),ignore_index = True)
-                msg = "[feature selection] Local search: Reject " + sign + " feature (" + selected_feature + ") with probability " + str(prob) + ", score: " + str(cur_score) + ", delta_score: " + str(delta_score) + ", T: " + str(T) + ", k: " + str(k)
-                alm_fun.show_msg(self.log, self.verbose, msg)  
+#                 msg = "[feature selection] Local search: Reject " + sign + " feature (" + selected_feature + ") with probability " + str(prob) + ", score: " + str(cur_score) + ", delta score: " + str(delta_score) + ", validation_score: " + str(cur_validation_score) + ", T: " + str(T) + ", k: " + str(k)
+#                 alm_fun.show_msg(self.log, self.verbose, msg)  
                 if all_feature_states[selected_idx] == 0:
                    start_features.remove(selected_feature)
                 else:
                     start_features.append(selected_feature) 
   
-        if (T < epsilon) | (successive_rejection_count > K):
+        if (T < epsilon) | (successive_noincrease_count > K):
             return 0
         if k == 0:
             k = K
             T = alpha * T
-        self.ls(alm_estimator, alm_dataset, start_features, start_score, all_features, all_feature_states, T, alpha, K, k, epsilon, successive_rejection_count)
+        self.ls(alm_estimator, alm_dataset, start_features, start_score, all_features, all_feature_states, T, alpha, K, k, epsilon, successive_rejection_count,successive_noincrease_count)
 

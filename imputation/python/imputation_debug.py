@@ -81,7 +81,7 @@ def create_email_notification_msg(session_id):
 #***************************************************************************************************************************************************************
 # debug for the web application 
 #***************************************************************************************************************************************************************
-dict_arg = pickle.load(open(project_path + "output/P38398[BRCA1-BRCT]_1.pickle", "rb"))
+dict_arg = pickle.load(open(project_path + "output/P04035[HMGCR_LOCAL_R2]_1.pickle", "rb"))
 JSON_Return = imputation_web.run_imputation(1,dict_arg) 
 print (JSON_Return)   
 
@@ -236,10 +236,16 @@ imputation_params['run_data_preprocess'] = 1
 # imputation_params['combine_dms'] = 1
 
 #**************FOR Individual DMS Data Imputation********************************
-imputation_params['dms_landscape_files'] = ['P38398[BRCA1_BRCT].txt']
-imputation_params['dms_fasta_files'] = ['P38398[BRCA1_BRCT].fasta']
-imputation_params['dms_protein_ids'] = ['P38398']
-imputation_params['data_names'] = ['BRCA1_BRCT']
+imputation_params['dms_landscape_files'] = ['rawData_TPK1.txt']
+imputation_params['dms_fasta_files'] = ['Q9H3S4.fasta']
+imputation_params['dms_protein_ids'] = ['Q9H3S4']
+imputation_params['data_names'] = ['TPK1']
+
+# imputation_params['dms_landscape_files'] = ['P38398[BRCA1_BRCT].txt']
+# imputation_params['dms_fasta_files'] = ['P38398[BRCA1_BRCT].fasta']
+# imputation_params['dms_protein_ids'] = ['P38398']
+# imputation_params['data_names'] = ['BRCA1_BRCT']
+
 
 # imputation_params['dms_landscape_files'] = ['rawData_SUMO1_solid.txt']
 # imputation_params['dms_fasta_files'] = ['P63165.fasta']
@@ -254,7 +260,7 @@ imputation_params['data_names'] = ['BRCA1_BRCT']
 imputation_params['quality_cutoffs'] = [0]
 imputation_params['regression_quality_cutoffs'] = imputation_params['quality_cutoffs']
 imputation_params['proper_num_replicates'] = [8]
-imputation_params['raw_processed'] = [1]
+imputation_params['raw_processed'] = [0]
 imputation_params['normalized_flags'] = [0]
 imputation_params['floor_flags'] = [1]
 imputation_params['regularization_flags'] = [1]
@@ -342,7 +348,7 @@ im_proj = imputation.imputation(imputation_params)
 #**************************************************************************************************#
 # Run individual dms gene
 #**************************************************************************************************#
-im_proj.imputation_run('BRCA1_BRCT')
+im_proj.imputation_run('TPK1')
 print('OK')
 #**************************************************************************************************#
 # Run all imputations to create FunRgerssor training data

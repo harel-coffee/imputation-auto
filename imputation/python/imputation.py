@@ -19,7 +19,7 @@ import codecs
 import re
 import math
 import pickle
-import gensim
+# import gensim
 import time
 import traceback
 import warnings
@@ -36,7 +36,7 @@ from datetime import datetime
 from statistics import mode
 
 python_path = '/usr/local/projects/ml/python/'
-project_path = '/usr/local/projects/imputation/gwt/www/'
+# project_path = '/usr/local/projects/imputation/gwt/www/'
 sys.path.append(python_path)
 import alm_project
 import alm_fun
@@ -247,12 +247,11 @@ class imputation:
             dms_gene_raw_fitness_controls[value_mean_3sd_minus] = dms_gene_raw_fitness_controls[value_mean] - 3 * dms_gene_raw_fitness_controls[value_sd]
             
         dms_gene_raw_fitness = pd.merge(dms_gene_raw_fitness,dms_gene_raw_fitness_controls,how = 'left')  
-        
-        
+                
         # filter out the replicates when there are relative high sequencing error, nonselect      
         dms_gene_raw_fitness.loc[dms_gene_raw_fitness['nonselect'] <= dms_gene_raw_fitness['controlNS_mean+3sd'], 'nonselect'] = np.nan
         # filter out the replicates when there are relative high sequencing error, select
-        dms_gene_raw_fitness.loc[dms_gene_raw_fitness['select'] <= dms_gene_raw_fitness['controlS_mean-3sd'],'select'] = np.nan
+#         dms_gene_raw_fitness.loc[dms_gene_raw_fitness['select'] <= dms_gene_raw_fitness['controlS_mean-3sd'],'select'] = np.nan
      
                      
 #         # filter out the replicates when there are relative high sequencing error, nonselect      
@@ -368,7 +367,7 @@ class imputation:
 #         self.imputation_web_log.write('dms_fasta_df: ' + str(dms_fasta_df.dtypes) + '\n')
 #         self.imputation_web_log.write('dms_gene_fitness: ' + str(dms_gene_fitness.dtypes) + '\n')
         dms_gene_fitness = pd.merge(dms_fasta_df, dms_gene_fitness, how='left')
-        
+        dms_gene_fitness['p_vid'] = dms_protein_id
         #to save the feature space, process blosum, funsum and aa properties here 
         dms_gene_features = pd.read_csv(dms_feature_file)  
          ####***************************************************************************************************************************************************************
@@ -424,33 +423,58 @@ class imputation:
 #         dms_gene_df.loc[dms_gene_df['fitness_input_filtered_se'] > 4, 'fitness_input_filtered'] = np.nan
 #         dms_gene_df.loc[dms_gene_df['fitness_input_filtered_se'] > 4, 'fitness_input_filtered_sd'] = np.nan
 #         dms_gene_df.loc[dms_gene_df['fitness_input_filtered_se'] > 4, 'fitness_input_filtered_se'] = np.nan 
+
+        ####*************************************************************************************************************************************************************
+        # step1: Calculate the probability of a variant having null-like functional impact
+        # define:
+        # P(SYN model) : model is normal distribution from SYN variants  
+        # P(STOP model): model is normal distribution from STOP varaints
+        # P(v | SYN model): likelihood if v belong to SYN model
+        # P(v | STOP model): likeihood if v belong to STOP model
+        # P(STOP model | v) = P(STOP model) * P(v | STOP model)
+        # P(SYN model | v) = P(SYN model) * p(v | SYN model)        
+        # final P(functional impact | v) = P(STOP model |v) / (P(STOP model |v) + P(SYN model |v))      
+        ####*************************************************************************************************************************************************************        
+        stop_coordinates = []
+        for region in self.stop_exclusion[self.data_names.index(data_name)].split(","):
+            if ':' in region:
+                start = int(region.split(':')[0])
+                end = int(region.split(':')[1])
+                stop_coordinates = stop_coordinates + list(range(start,end+1))
+            else:
+                stop_coordinates = stop_coordinates + [int(region)]
+               
+        dms_gene_df['syn_filtered'] = 1
+        syn_keep_index = (dms_gene_df['annotation'] == 'SYN') & dms_gene_df['fitness_input_filtered'].notnull() & (dms_gene_df['quality_score'] > self.synstop_cutoffs[self.data_names.index(data_name)])
+        dms_gene_df.loc[syn_keep_index,'syn_filtered'] = 0
+        
+        dms_gene_df['stop_filtered'] = 1
+        stop_keep_index = (dms_gene_df['annotation'] == 'STOP') & dms_gene_df['fitness_input_filtered'].notnull() & (dms_gene_df['quality_score'] > self.synstop_cutoffs[self.data_names.index(data_name)]) & ~dms_gene_df['aa_pos'].isin(stop_coordinates)
+        dms_gene_df.loc[stop_keep_index,'stop_filtered'] = 0
+        
+        
+        p_syn = 0.5 #the prior that a variant is from the SYN varaints distribution
+        p_stop = 0.5 #the prior that a variant is from the STOP variants distribution
+        
+        syn_mean = dms_gene_df.loc[syn_keep_index,'fitness_input_filtered'].mean()
+        syn_std = dms_gene_df.loc[syn_keep_index,'fitness_input_filtered'].std()
+        stop_mean = dms_gene_df.loc[stop_keep_index,'fitness_input_filtered'].mean()
+        stop_std = dms_gene_df.loc[stop_keep_index,'fitness_input_filtered'].std()
+        
+        dms_gene_df['l_syn'] = dms_gene_df.apply(lambda x: stats.norm.pdf(x['fitness_input_filtered'],loc = syn_mean,scale = syn_std),axis = 1)
+        dms_gene_df['l_stop'] = dms_gene_df.apply(lambda x: stats.norm.pdf(x['fitness_input_filtered'],loc = stop_mean,scale = stop_std),axis = 1)
+        
+        dms_gene_df['fitness_prob'] =   dms_gene_df['l_stop']*p_stop / ( dms_gene_df['l_stop']*p_stop + dms_gene_df['l_syn']*p_syn) 
+
         ####*************************************************************************************************************************************************************
         # step2: fitness normalization
         ####*************************************************************************************************************************************************************
         if int(normalized) == 0:            
-            stop_coordinates = []
-            for region in self.stop_exclusion[self.data_names.index(data_name)].split(","):
-                if ':' in region:
-                    start = int(region.split(':')[0])
-                    end = int(region.split(':')[1])
-                    stop_coordinates = stop_coordinates + list(range(start,end+1))
-                else:
-                    stop_coordinates = stop_coordinates + [int(region)]
-                   
-            dms_gene_df['syn_filtered'] = 1
-            syn_keep_index = (dms_gene_df['annotation'] == 'SYN') & dms_gene_df['fitness_input_filtered'].notnull() & (dms_gene_df['fitness_input_filtered_se'] < 1) & (dms_gene_df['quality_score'] > self.synstop_cutoffs[self.data_names.index(data_name)])
-            dms_gene_df.loc[syn_keep_index,'syn_filtered'] = 0
             syn_median = np.median(dms_gene_df.loc[syn_keep_index,'fitness_input_filtered'])
-                                
-            dms_gene_df['stop_filtered'] = 1
-            stop_keep_index = (dms_gene_df['annotation'] == 'STOP') & dms_gene_df['fitness_input_filtered'].notnull() & (dms_gene_df['fitness_input_filtered_se'] < 1) & (dms_gene_df['quality_score'] > self.synstop_cutoffs[self.data_names.index(data_name)]) & ~dms_gene_df['aa_pos'].isin(stop_coordinates)
-            dms_gene_df.loc[stop_keep_index,'stop_filtered'] = 0
-            stop_median = np.median(dms_gene_df.loc[stop_keep_index,'fitness_input_filtered'])
-            
+            stop_median = np.median(dms_gene_df.loc[stop_keep_index,'fitness_input_filtered'])            
             dms_gene_df['fitness_org'] = (dms_gene_df['fitness_input_filtered'] - stop_median) / (syn_median - stop_median)
             dms_gene_df['fitness_sd_org'] = dms_gene_df['fitness_input_filtered_sd'] / (syn_median - stop_median) 
-            dms_gene_df['fitness_se_org'] = dms_gene_df['fitness_input_filtered_se'] / (syn_median - stop_median)
-                        
+            dms_gene_df['fitness_se_org'] = dms_gene_df['fitness_input_filtered_se'] / (syn_median - stop_median)        
         else:
             dms_gene_df['fitness_org'] = dms_gene_df['fitness_input_filtered']
             dms_gene_df['fitness_sd_org'] = dms_gene_df['fitness_input_filtered_sd']
@@ -860,7 +884,7 @@ class imputation:
         ####*************************************************************************************************************************************************************
         # step7: save files and draw figures
         ####*************************************************************************************************************************************************************
-        dms_gene_csv_df = dms_gene_df[['p_vid','aa_ref', 'aa_pos', 'aa_pos_index', 'aa_alt', 'annotation', 'aa_psipred','ss_end_pos','ss_end_pos_index','hmm_id','pfam_end_pos','pfam_end_pos_index','quality_score', 'num_replicates', 'fitness_org', 'fitness_sd_org', 'fitness_reverse', 'fitness_sd_reverse', 'fitness', 'fitness_sd', 'fitness_se', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'knn_se', 'knn_count', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'funsum_fitness_mean', 'blosum62', 'gnomad_af', 'asa_mean', 'pseudo_count', 'fitness_input', 'fitness_input_sd','fitness_input_filtered', 'fitness_input_filtered_sd','syn_filtered','stop_filtered']]  
+        dms_gene_csv_df = dms_gene_df[['p_vid','aa_ref', 'aa_pos', 'aa_pos_index', 'aa_alt', 'annotation', 'aa_psipred','ss_end_pos','ss_end_pos_index','hmm_id','pfam_end_pos','pfam_end_pos_index','quality_score', 'num_replicates', 'fitness_prob', 'fitness_org', 'fitness_sd_org', 'fitness_reverse', 'fitness_sd_reverse', 'fitness', 'fitness_sd', 'fitness_se', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'knn_se', 'knn_count', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'funsum_fitness_mean', 'blosum62', 'gnomad_af', 'asa_mean', 'pseudo_count', 'fitness_input', 'fitness_input_sd','fitness_input_filtered', 'fitness_input_filtered_sd','syn_filtered','stop_filtered']]  
 
         # fitness colorcode     
         if self.remediation[cur_data_idx] == 1:
@@ -933,7 +957,7 @@ class imputation:
         #*************************************************************************
         #imputation result for downloading
         #*************************************************************************
-        dms_imputation_csv_df = dms_gene_csv_df[['p_vid','aa_ref', 'aa_pos', 'aa_alt', 'annotation', 'quality_score', 'num_replicates', 'pseudo_count', 'fitness_input', 'fitness_input_sd', 'fitness_org', 'fitness_sd_org', 'fitness', 'fitness_sd', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'gnomad_af', 'asa_mean', 'aa_psipred', 'ss_end_pos', 'hmm_id', 'pfam_end_pos']]            
+        dms_imputation_csv_df = dms_gene_csv_df[['p_vid','aa_ref', 'aa_pos', 'aa_alt', 'annotation', 'quality_score', 'num_replicates', 'pseudo_count', 'fitness_input', 'fitness_input_sd', 'fitness_prob','fitness_org', 'fitness_sd_org', 'fitness', 'fitness_sd', 'fitness_sd_prior', 'fitness_sd_reg', 'fitness_se_reg', 'fitness_imputed', 'fitness_imputed_se', 'fitness_imputed_se_prior', 'fitness_refine', 'fitness_se_refine', 'polyphen_score', 'sift_score', 'provean_score', 'gnomad_af', 'asa_mean', 'aa_psipred', 'ss_end_pos', 'hmm_id', 'pfam_end_pos']]            
         dms_imputation_csv_df.to_csv(self.project_path + 'output/' + data_name + '_imputation.csv')
         
         #*************************************************************************
@@ -962,7 +986,6 @@ class imputation:
         alm_fun.show_msg (self.log,self.verbose,'**Class: [imputation] Fun: [run_imputation] .... done @' + str(datetime.now()))
         return(dms_gene_gwt_df.to_json(orient='records'))
     
-  
     def imputation_plot(self, data_name, dms_gene_df, lst_max_colors_fitness, lst_min_colors_fitness, lst_max_colors_asa, lst_min_colors_asa,plot_ve_map = 1,plot_internal_map = 0):     
         cur_data_idx = self.data_names.index(data_name)
         ####*************************************************************************************************************************************************************

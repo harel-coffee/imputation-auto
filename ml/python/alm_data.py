@@ -4,17 +4,6 @@ import pandas as pd
 import csv
 import os
 import re
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import seaborn as sns
-import matplotlib.pyplot as plt 
-import matplotlib.path as mpath
-import matplotlib.patches as patches  
-from matplotlib.lines import Line2D  
-from matplotlib.gridspec import GridSpec
-import matplotlib.collections as collections
 
 import operator
 import itertools
@@ -22,32 +11,11 @@ import time
 import math
 import random
 import codecs
-import pydotplus 
 import copy
 import pickle
-
-# sklearn
-import tensorflow as tf
-from sklearn import linear_model as lm
-from sklearn import svm
-from sklearn import feature_selection as fs
-from sklearn import model_selection as ms
-from sklearn import ensemble as es
-from sklearn import tree
-from sklearn import pipeline
-from sklearn import preprocessing
-from sklearn import metrics
-from sklearn.metrics.ranking import roc_auc_score
- 
-from scipy import stats 
-from functools import partial
 from datetime import datetime
-from numpy import inf
-from cgi import log
-from decimal import *
-from collections import Counter
-sns.set(rc={'axes.facecolor':'#C0C0C0'}) 
 
+from sklearn import model_selection as ms
 import alm_fun
     
 class alm_data:
@@ -88,64 +56,17 @@ class alm_data:
                 alm_fun.show_msg(self.log, self.verbose, msg)  
                         
             # engineer data
+            
             if self.if_engineer == 1:
                 self.engineer_data()
                 msg = "[egineer_data]\n" + self.data_msg()
                 alm_fun.show_msg(self.log, self.verbose, msg)    
             
-            if self.save_to_disk == 1:
-                    
-                self.dict_savedata = {}
-                self.dict_savedata['extra_train_data_df'] = self.extra_train_data_df
-                self.dict_savedata['train_data_df'] = self.train_data_df
-                self.dict_savedata['test_data_df'] = self.test_data_df
-                self.dict_savedata['target_data_df'] = self.target_data_df
-                
-                self.dict_savedata['train_data_index_df'] = self.train_data_index_df
-                self.dict_savedata['validation_data_index_df'] = self.validation_data_index_df                
-                self.dict_savedata['test_data_index_df'] = self.test_data_index_df
-                self.dict_savedata['target_data_index_df'] = self.target_data_index_df
-
-                self.dict_savedata['train_data_for_target_df'] = self.train_data_for_target_df
-                self.dict_savedata['target_data_for_target_df'] = self.target_data_for_target_df
-                self.dict_savedata['validation_data_for_target_df'] = self.validation_data_for_target_df                
-                
-                self.dict_savedata['train_splits_df'] = self.train_splits_df
-                self.dict_savedata['test_splits_df'] = self.test_splits_df
-                
-                self.dict_savedata['train_cv_splits_df'] = self.train_cv_splits_df
-                self.dict_savedata['validation_cv_splits_df'] = self.validation_cv_splits_df
-                
-                if self.if_gradient:
-                    self.dict_savedata['gradients'] = self.gradients
-                    
-                pickle_out = open(self.path + 'output/' + self.name + '_savedata.npy', 'wb')
-                pickle.dump(self.dict_savedata, pickle_out) 
-                pickle_out.close()        
-                    
-                
-                if self.if_engineer:
-                    self.dict_savedata_engineered = {}
-                    self.dict_savedata_engineered['train_data_for_target_engineered_df'] = self.train_data_for_target_engineered_df
-                    self.dict_savedata_engineered['target_data_for_target_engineered_df'] = self.target_data_for_target_engineered_df
-                    self.dict_savedata_engineered['validation_data_for_target_engineered_df'] = self.validation_data_for_target_engineered_df    
-                    
-                    self.dict_savedata_engineered['train_splits_engineered_df'] = self.train_splits_engineered_df
-                    self.dict_savedata_engineered['test_splits_engineered_df'] = self.test_splits_engineered_df
-                    
-                    self.dict_savedata_engineered['train_cv_splits_engineered_df'] = self.train_cv_splits_engineered_df
-                    self.dict_savedata_engineered['validation_cv_splits_engineered_df'] = self.validation_cv_splits_engineered_df
-
-                    if self.if_gradient:
-                        self.dict_savedata_engineered['gradients'] = self.gradients                
-
-                    pickle_out = open(self.path + 'output/' + self.name + '_savedata_engineered.npy','wb')
-                    pickle.dump(self.dict_savedata_engineered, pickle_out) 
-                    pickle_out.close()        
+            if self.save_to_disk == 1:                    
+                self.save_data()
                      
         else:
-
-            self.dict_savedata = np.load(self.path + 'output/' + self.name + '_savedata.npy')
+            self.dict_savedata = np.load(self.path + 'output/npy/' + self.name + '_savedata.npy')
 
             self.extra_train_data_df = self.dict_savedata['extra_train_data_df'] 
             self.train_data_df = self.dict_savedata['train_data_df'] 
@@ -171,7 +92,7 @@ class alm_data:
                 self.gradients = self.dict_savedata['gradients']
             
             if self.if_engineer == 1:
-                self.dict_savedata_engineered = np.load(self.path + 'output/' + self.name + '_savedata_engineered.npy')
+                self.dict_savedata_engineered = np.load(self.path + 'output/npy/' + self.name + '_savedata_engineered.npy')
                 self.train_data_for_target_engineered_df = self.dict_savedata_engineered['train_data_for_target_engineered_df'] 
                 self.target_data_for_target_engineered_df = self.dict_savedata_engineered['target_data_for_target_engineered_df'] 
                 self.validation_data_for_target_engineered_df  = self.dict_savedata_engineered['validation_data_for_target_engineered_df']   
@@ -183,6 +104,57 @@ class alm_data:
                 self.validation_cv_splits_engineered_df = self.dict_savedata_engineered['validation_cv_splits_engineered_df'] 
                 
             msg = "[refresh_data] -- load from disk --" + self.data_msg()
+
+#             if self.save_to_disk == 1:
+#                     
+#                 self.dict_savedata = {}
+#                 self.dict_savedata['extra_train_data_df'] = self.extra_train_data_df
+#                 self.dict_savedata['train_data_df'] = self.train_data_df
+#                 self.dict_savedata['test_data_df'] = self.test_data_df
+#                 self.dict_savedata['target_data_df'] = self.target_data_df
+#                 
+#                 self.dict_savedata['train_data_index_df'] = self.train_data_index_df
+#                 self.dict_savedata['validation_data_index_df'] = self.validation_data_index_df                
+#                 self.dict_savedata['test_data_index_df'] = self.test_data_index_df
+#                 self.dict_savedata['target_data_index_df'] = self.target_data_index_df
+# 
+#                 self.dict_savedata['train_data_for_target_df'] = self.train_data_for_target_df
+#                 self.dict_savedata['target_data_for_target_df'] = self.target_data_for_target_df
+#                 self.dict_savedata['validation_data_for_target_df'] = self.validation_data_for_target_df                
+#                 
+#                 self.dict_savedata['train_splits_df'] = self.train_splits_df
+#                 self.dict_savedata['test_splits_df'] = self.test_splits_df
+#                 
+#                 self.dict_savedata['train_cv_splits_df'] = self.train_cv_splits_df
+#                 self.dict_savedata['validation_cv_splits_df'] = self.validation_cv_splits_df
+#                 
+#                 if self.if_gradient:
+#                     self.dict_savedata['gradients'] = self.gradients
+#                     
+#                 pickle_out = open(self.path + 'output/npy/' + self.name + '_savedata.npy', 'wb')
+#                 pickle.dump(self.dict_savedata, pickle_out) 
+#                 pickle_out.close()        
+#                     
+#                 self.engineer_data()
+# 
+#                 self.dict_savedata_engineered = {}
+#                 self.dict_savedata_engineered['train_data_for_target_engineered_df'] = self.train_data_for_target_engineered_df
+#                 self.dict_savedata_engineered['target_data_for_target_engineered_df'] = self.target_data_for_target_engineered_df
+#                 self.dict_savedata_engineered['validation_data_for_target_engineered_df'] = self.validation_data_for_target_engineered_df    
+#                 
+#                 self.dict_savedata_engineered['train_splits_engineered_df'] = self.train_splits_engineered_df
+#                 self.dict_savedata_engineered['test_splits_engineered_df'] = self.test_splits_engineered_df
+#                 
+#                 self.dict_savedata_engineered['train_cv_splits_engineered_df'] = self.train_cv_splits_engineered_df
+#                 self.dict_savedata_engineered['validation_cv_splits_engineered_df'] = self.validation_cv_splits_engineered_df
+# 
+#                 if self.if_gradient:
+#                     self.dict_savedata_engineered['gradients'] = self.gradients                
+# 
+#                 pickle_out = open(self.path + 'output/npy/' + self.name + '_savedata_engineered.npy','wb')
+#                 pickle.dump(self.dict_savedata_engineered, pickle_out) 
+#                 pickle_out.close()    
+
             alm_fun.show_msg(self.log, self.verbose, msg)  
 
     def reload_data(self, ctuoff=np.nan):
@@ -190,7 +162,56 @@ class alm_data:
         self.read_data()        
         # refresh data
         self.refresh_data()
-         
+  
+    def save_data(self):
+        
+        self.dict_savedata = {}
+        self.dict_savedata['extra_train_data_df'] = self.extra_train_data_df
+        self.dict_savedata['train_data_df'] = self.train_data_df
+        self.dict_savedata['test_data_df'] = self.test_data_df
+        self.dict_savedata['target_data_df'] = self.target_data_df
+        
+        self.dict_savedata['train_data_index_df'] = self.train_data_index_df
+        self.dict_savedata['validation_data_index_df'] = self.validation_data_index_df                
+        self.dict_savedata['test_data_index_df'] = self.test_data_index_df
+        self.dict_savedata['target_data_index_df'] = self.target_data_index_df
+        
+        self.dict_savedata['train_data_for_target_df'] = self.train_data_for_target_df
+        self.dict_savedata['target_data_for_target_df'] = self.target_data_for_target_df
+        self.dict_savedata['validation_data_for_target_df'] = self.validation_data_for_target_df                
+        
+        self.dict_savedata['train_splits_df'] = self.train_splits_df
+        self.dict_savedata['test_splits_df'] = self.test_splits_df
+        
+        self.dict_savedata['train_cv_splits_df'] = self.train_cv_splits_df
+        self.dict_savedata['validation_cv_splits_df'] = self.validation_cv_splits_df
+        
+        if self.if_gradient:
+            self.dict_savedata['gradients'] = self.gradients
+        
+        pickle_out = open(self.path + 'output/npy/' + self.name + '_savedata.npy', 'wb')
+        pickle.dump(self.dict_savedata, pickle_out) 
+        pickle_out.close()        
+                
+        if self.if_engineer:
+            self.dict_savedata_engineered = {}
+            self.dict_savedata_engineered['train_data_for_target_engineered_df'] = self.train_data_for_target_engineered_df
+            self.dict_savedata_engineered['target_data_for_target_engineered_df'] = self.target_data_for_target_engineered_df
+            self.dict_savedata_engineered['validation_data_for_target_engineered_df'] = self.validation_data_for_target_engineered_df    
+            
+            self.dict_savedata_engineered['train_splits_engineered_df'] = self.train_splits_engineered_df
+            self.dict_savedata_engineered['test_splits_engineered_df'] = self.test_splits_engineered_df
+            
+            self.dict_savedata_engineered['train_cv_splits_engineered_df'] = self.train_cv_splits_engineered_df
+            self.dict_savedata_engineered['validation_cv_splits_engineered_df'] = self.validation_cv_splits_engineered_df
+            
+            if self.if_gradient:
+                self.dict_savedata_engineered['gradients'] = self.gradients                
+            
+            pickle_out = open(self.path + 'output/npy/' + self.name + '_savedata_engineered.npy','wb')
+            pickle.dump(self.dict_savedata_engineered, pickle_out) 
+            pickle_out.close()     
+            
     def read_data(self): 
         self.train_data_original_df = pd.read_csv(self.path + self.train_file)
         self.test_data_original_df = pd.read_csv(self.path + self.test_file) 
@@ -203,24 +224,28 @@ class alm_data:
     def load_data(self):                  
         # loading original training data , add random feature , remove the ones without label   
         self.train_data_working_df = self.train_data_original_df.copy()
-        self.train_data_working_df['random_feature'] = np.random.uniform(0, 1, self.train_data_working_df.shape[0])
+        if 'random_feature' not in self.train_data_working_df.columns:
+            self.train_data_working_df['random_feature'] = np.random.uniform(0, 1, self.train_data_working_df.shape[0])
         self.train_data_working_df = self.train_data_working_df.loc[self.train_data_working_df[self.dependent_variable].notnull(), :]
         
         # loading original test data, if there is no dependent variable than add one, otherwise remove the records without label
         self.test_data_working_df = self.test_data_original_df.copy()
         if self.test_data_original_df.shape[0] != 0 :
-            self.test_data_working_df['random_feature'] = np.random.uniform(0, 1, self.test_data_working_df.shape[0])
+            if 'random_feature' not in self.test_data_working_df.columns:
+                self.test_data_working_df['random_feature'] = np.random.uniform(0, 1, self.test_data_working_df.shape[0])
             self.test_data_working_df = self.test_data_working_df.loc[self.test_data_working_df[self.dependent_variable].notnull(), :]
 
         # loading original target data
         self.target_data_working_df = self.target_data_original_df.copy()
         if self.target_data_original_df.shape[0] != 0 :
-            self.target_data_working_df['random_feature'] = np.random.uniform(0, 1, self.target_data_working_df.shape[0])
+            if 'random_feature' not in self.target_data_working_df.columns:
+                self.target_data_working_df['random_feature'] = np.random.uniform(0, 1, self.target_data_working_df.shape[0])
 #             self.target_data_working_df = self.target_data_working_df.loc[self.target_data_working_df[self.dependent_variable].notnull(), :]
         
         self.extra_train_data_working_df = self.extra_train_data_original_df.copy()
         if self.extra_train_data_original_df.shape[0] != 0:
-            self.extra_train_data_working_df['random_feature'] = np.random.uniform(0, 1, self.extra_train_data_working_df.shape[0])
+            if 'random_feature' not in self.extra_train_data_working_df.columns:
+                self.extra_train_data_working_df['random_feature'] = np.random.uniform(0, 1, self.extra_train_data_working_df.shape[0])
             self.extra_train_data_working_df = self.extra_train_data_working_df.loc[self.extra_train_data_working_df[self.dependent_variable].notnull(), :]
 
          
@@ -310,8 +335,7 @@ class alm_data:
           
     def slice_data(self):
         [self.target_data_df, self.train_data_df, self.test_data_df, self.extra_train_data_df] = self.data_slice(self.name, self.target_data_df, self.train_data_df, self.test_data_df, self.extra_train_data_df)        
-           
-
+        
     def engineer_data(self):              
 
         self.train_data_for_target_engineered_df = copy.deepcopy(self.train_data_for_target_df)
@@ -472,7 +496,7 @@ class alm_data:
                     else:
                         kf_folds = int(1/self.test_split_ratio)
                         kf = ms.StratifiedKFold(n_splits=kf_folds, shuffle=True) 
-                        kf_list.append(list(kf.split(self.train_data_df))[0])
+                        kf_list.append(list(kf.split(self.train_data_df,self.train_data_df[self.dependent_variable]))[0])
                 else:                
                     kf = ms.StratifiedKFold(n_splits=self.test_split_folds, shuffle=True)   
                     kf_list = list(kf.split(self.train_data_df,self.train_data_df[self.dependent_variable]))

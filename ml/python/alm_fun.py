@@ -2,53 +2,74 @@
 import numpy as np
 import pandas as pd
 import smtplib
-from email.message import EmailMessage
 import csv
 import os
 import re
+import gzip
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import seaborn as sns
-import matplotlib.pyplot as plt 
 import matplotlib.path as mpath
 import matplotlib.patches as patches  
+import matplotlib.collections as collections
 from matplotlib.lines import Line2D  
 from matplotlib.gridspec import GridSpec
-import matplotlib.collections as collections
+from ftplib import FTP
+from email.message import EmailMessage
+from datetime import datetime
 
+
+from sklearn import metrics
+from scipy import stats
 import operator
 import itertools
 import time
 import math
 import random
 import codecs
-import pydotplus 
 import copy
 import pickle
-
-# sklearn
-import tensorflow as tf
-from sklearn import linear_model as lm
-from sklearn import svm
-from sklearn import feature_selection as fs
-from sklearn import model_selection as ms
-from sklearn import ensemble as es
-from sklearn import tree
-from sklearn import pipeline
-from sklearn import preprocessing
-from sklearn import metrics
-from sklearn.metrics.ranking import roc_auc_score
- 
-from scipy import stats 
-from functools import partial
-from datetime import datetime
-from numpy import inf
-from cgi import log
 from decimal import *
-from collections import Counter
-sns.set(rc={'axes.facecolor':'#C0C0C0'}) 
+
+
+def create_ftp_object(ftp_site):   
+    cur_ftp = FTP(ftp_site)
+    cur_ftp.login()
+    return(cur_ftp)
+
+def download_ftp(ftp, ftp_path, ftp_file, local_file):
+    try:
+        if os.path.isfile(local_file):
+            statinfo = os.stat(local_file)
+            local_size = statinfo.st_size
+            ftp.cwd(ftp_path)
+            remote_size = ftp.size(ftp_path + ftp_file)
+            if local_size != remote_size :
+                ftp.retrbinary('RETR ' + ftp_file, open(local_file, 'wb').write)
+                return('updated')
+            else:
+                print (local_file + ' is up to date.')
+                return('up_to_date')
+        else: 
+            ftp.cwd(ftp_path)
+            ftp.retrbinary('RETR ' + ftp_file, open(local_file, 'wb').write)
+            print (local_file + ' is downloaded.')
+            return('downloaded')
+    except Exception as e:
+#             os.remove(local_file)
+        print (str(e))
+        return(str(e))
+
+def gzip_decompress(zipped_file_name, unzipped_file_name):
+    inF = gzip.GzipFile(zipped_file_name, 'rb')
+    s = inF.read()
+    inF.close()
+    outF = open(unzipped_file_name, 'wb')
+    outF.write(s)
+    outF.close()   
 
 def quality_evaluation(name, path, extra_train_file, use_extra_train_data, train_file, test_file, dependent_variable, feature_engineer, ml_type, estimators, cv_split_method, cv_split_folds, verbose, onehot_features, initial_features, percent_min_feature, quality_feature, quality_feature_direction, quality_feature_cutoffs):
     cutoff_objects = []    
@@ -61,8 +82,17 @@ def quality_evaluation(name, path, extra_train_file, use_extra_train_data, train
     return  cutoff_objects
                   
 def show_msg(infile, verbose, msg):
-    infile.write(msg + '\n')
-    if (verbose == 1): print (msg)     
+    if isinstance(infile,str):        
+        with open(infile,'a+') as log_file:
+            log_file.write(str(datetime.now())[:19] +'||' + msg + '\n')
+        log_file.close()
+    else:
+        infile.write(msg)
+    if (verbose == 1): print (msg)  
+    
+def show_msg_openlog(log,verbose,msg):
+    log.write(msg)
+    if (verbose == 1): print (msg)    
         
 def show_start_msg(infile,verbose,class_name,fun_name):
     msg = 'Class: [' + class_name + '] Fun: [' + fun_name + '] .... start @' + str(datetime.now())
@@ -338,19 +368,36 @@ def classification_metrics_sub(y, y_predicted, cutoff=np.nan, test_precision=0.9
     metrics_dict['fprs'] = fprs
     metrics_dict['tprs'] = tprs
     metrics_dict['roc_thresholds'] = roc_thresholds
+    
+    
+    
+    metrics_dict['recall_fixed_precision'] = 0    
+    for i in range(len(precisions)):
+        if precisions[i] > test_precision:
+            # this is the first point cross target precision line from left to right
+            metrics_dict['recall_fixed_precision'] = round(recalls[i-1] - (test_precision-precisions[i-1])*(recalls[i-1]-recalls[i])/(precisions[i]-precisions[i-1]),4)
+            break
+            
+    metrics_dict['precision_fixed_recall'] = 0    
+    for i in range(len(recalls)):
+        if recalls[i] < test_recall:
+            # this is the first point cross target precision line from left to right
+            metrics_dict['precision_fixed_recall'] = round(precisions[i] - (test_recall-recalls[i])*(precisions[i]-precisions[i-1])/(recalls[i-1]-recalls[i]),4)
+            break
+    
+    
+    
+#     if max(precision_diff) > 0:
+#         min_diff = min(abs(precision_diff))
+#         idx_precision = list(abs(precision_diff)).index(min_diff)
+#         metrics_dict['recall_fixed_precision'] = round(recalls[idx_precision],4)
+#     else:
+#         metrics_dict['recall_fixed_precision'] = 0
      
-    precision_diff = precisions - test_precision
-    if max(precision_diff) > 0:
-        min_diff = min(abs(precision_diff))
-        idx_precision = list(abs(precision_diff)).index(min_diff)
-        metrics_dict['recall_fixed_precision'] = round(recalls[idx_precision],4)
-    else:
-        metrics_dict['recall_fixed_precision'] = 0
-     
-    recall_diff = abs(recalls - test_recall)
-    min_diff = min(recall_diff)
-    idx_recall = list(recall_diff).index(min_diff)
-    metrics_dict['precision_fixed_recall'] = round(precisions[idx_recall],4)
+#     recall_diff = abs(recalls - test_recall)
+#     min_diff = min(recall_diff)
+#     idx_recall = list(recall_diff).index(min_diff)
+#     metrics_dict['precision_fixed_recall'] = round(precisions[idx_recall],4)
  
     best_cutoff = float(round(Decimal(best_cutoff), 4))      
     best_mcc = float(round(Decimal(best_mcc), 4))
@@ -373,7 +420,7 @@ def plot_prc(y, y_predicted, plot_name, fig_w, fig_h, cutoff=np.nan, test_precis
         else:
             lst_colors = list(matplotlib.colors.BASE_COLORS.keys())
         
-        for i in range(1,y_predicted.shape[1]):
+        for i in range(y_predicted.shape[1]):
             metrics_dict = classification_metrics(y, y_predicted[y_predicted.columns[i]], cutoff, test_precision, test_recall)[1]
 #             metrics_dict['precisions'][-1] = metrics_dict['precisions'][-2]                          
 #             ax_auprc.plot(metrics_dict['recalls'] + i*0.005 ,metrics_dict['precisions'] + i*0.005,marker='o',markersize=5,color = lst_colors[i],label = y_predicted.columns[i] + '(' + str(metrics_dict['auprc']) + ')')
@@ -415,6 +462,7 @@ def plot_prc(y, y_predicted, plot_name, fig_w, fig_h, cutoff=np.nan, test_precis
     ax_auprc.set_ylim(0, 1.05)
     fig.tight_layout()
     plt.savefig(plot_name)   
+    return(ax_auprc)
 
 def plot_roc(y, y_predicted, plot_name, fig_w, fig_h, cutoff=np.nan, test_precision=0.9, test_recall=0.9, title_name='AUROC'):
     fig = plt.figure(figsize=(fig_w, fig_h))
@@ -460,6 +508,105 @@ def plot_roc(y, y_predicted, plot_name, fig_w, fig_h, cutoff=np.nan, test_precis
     ax_auroc.set_ylim(0, 1)
     fig.tight_layout()
     plt.savefig(plot_name)   
+    return(ax_auroc)
+
+def plot_prc_ax(y, y_predicted, ax_auprc, fig_w, fig_h, cutoff=np.nan, test_precision=0.9, test_recall=0.9, title_name='AUPRC'):  
+    ax_auprc.margins(1,1)
+    color_lst = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000','#666633']
+    
+    if y_predicted.shape[1] > 1:
+        if y_predicted.shape[1] > 8:
+#             lst_colors = list(matplotlib.colors.CSS4_COLORS.keys())
+            lst_colors = color_lst
+        else:
+            lst_colors = list(matplotlib.colors.BASE_COLORS.keys())
+        
+        for i in range(y_predicted.shape[1]):
+            metrics_dict = classification_metrics(y, y_predicted[y_predicted.columns[i]], cutoff, test_precision, test_recall)[1]
+#             metrics_dict['precisions'][-1] = metrics_dict['precisions'][-2]                          
+#             ax_auprc.plot(metrics_dict['recalls'] + i*0.005 ,metrics_dict['precisions'] + i*0.005,marker='o',markersize=5,color = lst_colors[i],label = y_predicted.columns[i] + '(' + str(metrics_dict['auprc']) + ')')
+            ax_auprc.plot(metrics_dict['recalls'], metrics_dict['precisions'], marker='o', markersize=2, color=lst_colors[i], label = y_predicted.columns[i] + ' (' + str(metrics_dict['auprc']) + ') (' + str(metrics_dict['recall_fixed_precision']) +')')
+            print (i)
+        # Now add the legend with some customizations.
+#         legend = ax_auprc.legend(loc='upper left',bbox_to_anchor=(1, 1),shadow=True)        
+        legend = ax_auprc.legend(loc='lower left', shadow=True ,prop={'size': 30}) 
+        # The frame is matplotlib.patches.Rectangle instance surrounding the legend.
+        frame = legend.get_frame()
+        frame.set_facecolor('0.90')
+        
+        # Set the fontsize
+#         for label in legend.get_texts():
+#             label.set_fontsize('large')
+        
+        for label in legend.get_lines():
+            label.set_linewidth(1.5)  # the legend line width    
+    else:        
+        metrics_dict = classification_metrics(y, y_predicted, cutoff, test_precision, test_recall)[1]    
+        fig = plt.figure() 
+        ax_auprc = plt.subplot()   
+#         metrics_dict['precisions'][-1] = metrics_dict['precisions'][-2]          
+        ax_auprc.plot(metrics_dict['recalls'], metrics_dict['precisions'], marker='o', markersize=2, color='black', label='AUPRC: (' + str(metrics_dict['auprc']) + ')')
+        # Now add the legend with some customizations.
+        legend = ax_auprc.legend(loc='lower left', shadow=True ,prop={'size': 20}) 
+        frame = legend.get_frame()
+        frame.set_facecolor('0.90')
+        
+#         for label in legend.get_texts():
+#             label.set_fontsize(25)
+        
+        for label in legend.get_lines():
+            label.set_linewidth(1.5)  # the legend line width   
+    pass
+
+    ax_auprc.plot([0, 1], [test_precision, test_precision], linestyle = '--', color = 'black', lw=2)
+    
+    ax_auprc.set_title(title_name, size=30)
+    ax_auprc.set_xlabel('Recall',size = 20)
+    ax_auprc.set_ylabel('Precision',size = 20) 
+    ax_auprc.set_xlim(0, 1)
+    ax_auprc.set_ylim(0, 1.05) 
+    return(ax_auprc)
+
+def plot_roc_ax(y, y_predicted, ax_auroc, fig_w, fig_h, cutoff=np.nan, test_precision=0.9, test_recall=0.9, title_name='AUROC'):
+    ax_auroc.margins(1,1)
+    color_lst = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000','#666633']
+
+    if y_predicted.shape[1] > 1:
+        if y_predicted.shape[1] > 8:
+            lst_colors = color_lst
+        else:
+            lst_colors = list(matplotlib.colors.BASE_COLORS.keys())
+        
+        for i in range(y_predicted.shape[1]):
+            metrics_dict = classification_metrics(y, y_predicted[y_predicted.columns[i]], cutoff, test_precision, test_recall)[1]  
+            ax_auroc.plot(metrics_dict['fprs'], metrics_dict['tprs'], marker='o', markersize=2, color=lst_colors[i], label=y_predicted.columns[i] + '(' + str(metrics_dict['auroc']) + ')')
+            
+        # Now add the legend with some customizations.
+#         legend = ax_auroc.legend(loc='upper left',bbox_to_anchor=(1, 1),shadow=True ,prop={'size': 20})  
+        legend = ax_auroc.legend(loc='lower right',shadow=True ,prop={'size': 20})
+        # The frame is matplotlib.patches.Rectangle instance surrounding the legend.
+        frame = legend.get_frame()
+        frame.set_facecolor('0.90')
+        
+        # Set the fontsize
+#         for label in legend.get_texts():
+#             label.set_fontsize(25)
+        
+        for label in legend.get_lines():
+            label.set_linewidth(1.5)  # the legend line width    
+    else:
+        
+        metrics_dict = classification_metrics(y, y_predicted, cutoff, test_precision, test_recall)    
+        fig = plt.figure() 
+        ax_auroc = plt.subplot()            
+        ax_auroc.plot(metrics_dict['fprs'], metrics_dict['tprs'], marker='o', markersize=2, color='black', label='AUROC:(' + str(metrics_dict['auroc']) + ')')
+    pass
+    ax_auroc.set_title(title_name, size=30)
+    ax_auroc.set_xlabel('False Positive Rate',size = 20)
+    ax_auroc.set_ylabel('True Positive Rate',size = 20) 
+    ax_auroc.set_xlim(0, 1)
+    ax_auroc.set_ylim(0, 1.05)
+    return(ax_auroc)
 
 def plot_prc_backup(metrics_dict):
     fig = plt.figure() 
@@ -802,20 +949,21 @@ def error_propagation_operation(value1, value1_err, value2, value2_err, inOperat
     
     return pd.Series([value, value_err])
 
-
-def scatter_plots(ax, x, y, x_target_name, y_target_name, hue, hue_name, title_extra, marker_size=160):
+def scatter_plots(ax, x, y, x_target_name, y_target_name, hue =  None, hue_name = '', title_extra = '', color = 'royalblue', color_map = 'Blues', marker_size=160, title_show_r = 0):
     if hue is None:
-        ax.scatter(x, y, cmap='Blues', s=marker_size)
+        ax.scatter(x, y, c = color, s=marker_size)
     else:
-        ax.scatter(x, y, c=hue, cmap='Blues', s=marker_size)
+        ax.scatter(x, y, c=hue, cmap= color_map, s=marker_size)
    
-    ax.set_title(x_target_name + ' VS ' + y_target_name + ' [pcc:' + str(round(alm_fun.pcc_cal(x, y), 3)) + 
-                     '][spc:' + str(round(alm_fun.spc_cal(x, y), 3)) + '][color: ' + hue_name + '] ' + title_extra, size=20)
+    if title_show_r == 1:
+        ax.set_title(x_target_name + ' VS ' + y_target_name + ' [pcc:' + str(round(alm_fun.pcc_cal(x, y), 3)) + '][spc:' + str(round(alm_fun.spc_cal(x, y), 3)) + '][color: ' + hue_name + '] ' + title_extra, size=20)
+    else:
+        ax.set_title(x_target_name + ' VS ' + y_target_name +  title_extra, size=20)
+
     ax.set_ylabel(y_target_name, size=15)
     ax.set_xlabel(x_target_name, size=15) 
     ax.tick_params(size=20)
     return(ax)
-
 
 def mse_xgb_obj(y_true,y_pred):
     y = y_true
@@ -886,7 +1034,6 @@ def pcc_xgb_obj(y_true,y_pred):
     print('pcc:' + str(round(alm_fun.pcc_cal(y_true,y_pred),4)) + ' mse:' + str(round(alm_fun.mse_cal(y_true,y_pred),4)))
       
     return(grad,hess)
-
 
 def pcc_mse_xgb_obj(y_true,y_pred): 
     theta = 50
